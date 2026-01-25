@@ -6,10 +6,7 @@ import "./config";
 const app = express();
 setupApp(app);
 
-const TEST_PORT = process.env.TEST_PORT;
 const PORT = process.env.PORT || 3003;
-
-console.log("TEST ENV: " + TEST_PORT);
 
 export const startApp = async () => {
   await runDB();
