@@ -1,12 +1,12 @@
 import express from "express";
 import { setupApp } from "./setup-app";
 import { runDB } from "./db/mongo.db";
-import "./config";
+import { envConfig } from "./config";
 
 const app = express();
 setupApp(app);
 
-const PORT = process.env.PORT || 3003;
+const PORT = envConfig.appPort;
 
 export const startApp = async () => {
   await runDB();

@@ -1,29 +1,31 @@
-import {dataQueryRepository} from "../repository-layers/query-repository-layer/query-repository";
-import {bcryptService} from "../authentication/bcypt";
+import { dataQueryRepository } from "../repository-layers/query-repository-layer/query-repository";
+import { bcryptService } from "../authentication/bcypt";
 
 export const authService = {
+  async loginUser(
+    loginOrEmail: string,
+    password: string,
+  ): Promise<{ accessToken: string } | null> {
+    const isCorrectCredentials = await this.checkUserCredentials(
+      loginOrEmail,
+      password,
+    );
 
-    async loginUser(loginOrEmail: string, password: string) :Promise<{ accessToken: string } | null> {
+    if (!isCorrectCredentials) {
+      return null;
+    }
 
-        const isCorrectCredentials = await this.checkUserCredentials(
-            loginOrEmail,
-            password,
-        );
+    return { accessToken: "token" };
+  },
 
-        if (!isCorrectCredentials) {
-            return null;
-        }
+  async checkUserCredentials(
+    loginOrEmail: string,
+    password: string,
+  ): Promise<boolean> {
+    const user = await dataQueryRepository.findByLoginOrEmail(loginOrEmail);
 
-        return { accessToken: "token" };
-    },
+    if (!user) return false;
 
-
-    async checkUserCredentials(loginOrEmail: string, password: string) :Promise<boolean> {
-
-        const user = await dataQueryRepository.findByLoginOrEmail(loginOrEmail);
-
-        if (!user) return false;
-
-        return bcryptService.checkPassword(password, user.passwordHash);
-    },
-}
+    return bcryptService.checkPassword(password, user.passwordHash);
+  },
+};

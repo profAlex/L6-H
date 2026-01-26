@@ -14,10 +14,9 @@ export const attemptToLogin = async (
   // });
 
   const { loginOrEmail, password } = req.body;
-
   const accessToken = await authService.loginUser(loginOrEmail, password);
 
   if (!accessToken) return res.sendStatus(HttpStatus.Unauthorized);
 
-  return res.status(HttpStatus.NoContent).end(); //статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет, поэтому можно дать .end() в конце
+  return res.status(HttpStatus.NoContent).end(); // статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет, поэтому можно дать .end() в конце
 };

@@ -21,6 +21,6 @@ const attemptToLogin = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const accessToken = yield auth_service_1.authService.loginUser(loginOrEmail, password);
     if (!accessToken)
         return res.sendStatus(http_statuses_1.HttpStatus.Unauthorized);
-    return res.status(http_statuses_1.HttpStatus.NoContent).end(); //статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет
+    return res.status(http_statuses_1.HttpStatus.NoContent).end(); // статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет, поэтому можно дать .end() в конце
 });
 exports.attemptToLogin = attemptToLogin;

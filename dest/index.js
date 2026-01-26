@@ -19,9 +19,7 @@ const mongo_db_1 = require("./db/mongo.db");
 require("./config");
 const app = (0, express_1.default)();
 (0, setup_app_1.setupApp)(app);
-const TEST_PORT = process.env.TEST_PORT;
 const PORT = process.env.PORT || 3003;
-console.log("TEST ENV: " + TEST_PORT);
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, mongo_db_1.runDB)();
     app.listen(PORT, () => {
