@@ -1,6 +1,4 @@
-
-
-const bcrypt = require('bcrypt');
+import bcrypt from "bcrypt";
 
 export const bcryptService = {
     async generateHash(password: string) {
@@ -9,6 +7,6 @@ export const bcryptService = {
     },
 
     async checkPassword(password: string, hash: string) {
-        return bcrypt.compare(password, hash)
-    }
-}
+        return bcrypt.compare(password, hash);
+    },
+};

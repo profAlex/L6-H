@@ -1,18 +1,21 @@
-import {BlogInputModel} from "../../routers/router-types/blog-input-model";
-import {PostViewModel} from "../../routers/router-types/post-view-model";
-import {PostInputModel} from "../../routers/router-types/post-input-model";
-import {bloggersCollection, postsCollection, usersCollection} from "../../db/mongo.db";
-import {ObjectId} from "mongodb";
-import {BlogPostInputModel} from "../../routers/router-types/blog-post-input-model";
-import {CustomError} from "../utility/custom-error-class";
-import {UserInputModel} from "../../routers/router-types/user-input-model";
-import {UserViewModel} from "../../routers/router-types/user-view-model";
-import {bcryptService} from "../../authentication/bcypt";
-import {UserCollectionStorageModel} from "../../routers/router-types/user-storage-model";
+import { BlogInputModel } from "../../routers/router-types/blog-input-model";
+import { PostViewModel } from "../../routers/router-types/post-view-model";
+import { PostInputModel } from "../../routers/router-types/post-input-model";
+import {
+    bloggersCollection,
+    postsCollection,
+    usersCollection,
+} from "../../db/mongo.db";
+import { ObjectId } from "mongodb";
+import { BlogPostInputModel } from "../../routers/router-types/blog-post-input-model";
+import { CustomError } from "../utility/custom-error-class";
+import { UserInputModel } from "../../routers/router-types/user-input-model";
+import { UserViewModel } from "../../routers/router-types/user-view-model";
+import { bcryptService } from "../../authentication/bcrypt";
+import { UserCollectionStorageModel } from "../../routers/router-types/user-storage-model";
 
-
-export type bloggerCollectionStorageModel= {
-    _id: ObjectId,
+export type bloggerCollectionStorageModel = {
+    _id: ObjectId;
     id: string;
     name: string;
     description: string;
@@ -22,7 +25,7 @@ export type bloggerCollectionStorageModel= {
 };
 
 export type postCollectionStorageModel = {
-    _id: ObjectId,
+    _id: ObjectId;
     id: string;
     title: string;
     shortDescription: string;
@@ -146,15 +149,17 @@ export type postCollectionStorageModel = {
 //     }
 // ];
 
-async function findBlogByPrimaryKey(id: ObjectId): Promise<bloggerCollectionStorageModel | null> {
+async function findBlogByPrimaryKey(
+    id: ObjectId,
+): Promise<bloggerCollectionStorageModel | null> {
     return bloggersCollection.findOne({ _id: id });
 }
 
-
-async function findPostByPrimaryKey(id: ObjectId): Promise<postCollectionStorageModel | null> {
+async function findPostByPrimaryKey(
+    id: ObjectId,
+): Promise<postCollectionStorageModel | null> {
     return postsCollection.findOne({ _id: id });
 }
-
 
 export const dataCommandRepository = {
     // *****************************
@@ -218,8 +223,7 @@ export const dataCommandRepository = {
     //     return {items, totalCount};
     // },
 
-
-    async createNewBlog(newBlog: BlogInputModel): Promise <string | undefined> {
+    async createNewBlog(newBlog: BlogInputModel): Promise<string | undefined> {
         try {
             const tempId = new ObjectId();
             const newBlogEntry = {
@@ -227,45 +231,43 @@ export const dataCommandRepository = {
                 id: tempId.toString(),
                 ...newBlog,
                 createdAt: new Date(),
-                isMembership: false
+                isMembership: false,
             } as bloggerCollectionStorageModel;
-
 
             const result = await bloggersCollection.insertOne(newBlogEntry);
 
-            if (!result.acknowledged)
-            {
+            if (!result.acknowledged) {
                 throw new CustomError({
-                    errorMessage: { field: 'bloggersCollection.insertOne(newBlogEntry)', message: 'attempt to insert new blog entry failed' }
+                    errorMessage: {
+                        field: "bloggersCollection.insertOne(newBlogEntry)",
+                        message: "attempt to insert new blog entry failed",
+                    },
                 });
             }
 
             // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
             return result.insertedId.toString();
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
+            } else {
                 console.error(`Unknown error: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository",
+                );
             }
         }
     },
-
 
     // async getSeveralPostsById(sentBlogId:string, sentSanitizedQuery: InputGetBlogPostsByIdQuery) : Promise<{items: WithId<PostViewModel>[]; totalCount: number}> {
     //     const {
@@ -326,9 +328,10 @@ export const dataCommandRepository = {
     //     return undefined;
     // },
 
-
-    async updateBlog(blogId: string, newData: BlogInputModel): Promise<null | undefined> {
-
+    async updateBlog(
+        blogId: string,
+        newData: BlogInputModel,
+    ): Promise<null | undefined> {
         // if (ObjectId.isValid(blogId)) {
         //
         //     const idToCheck = new ObjectId(blogId);
@@ -343,60 +346,59 @@ export const dataCommandRepository = {
         //     }
         // }
 
-
-        try{
+        try {
             if (ObjectId.isValid(blogId)) {
-
                 const idToCheck = new ObjectId(blogId);
                 const res = await bloggersCollection.updateOne(
-                    {_id: idToCheck},
-                    {$set: {...newData}}
+                    { _id: idToCheck },
+                    { $set: { ...newData } },
                 );
 
-                if(!res.acknowledged)
-                {
+                if (!res.acknowledged) {
                     throw new CustomError({
-                        errorMessage: { field: 'bloggersCollection.updateOne', message: 'attempt to update blog entry failed' }
+                        errorMessage: {
+                            field: "bloggersCollection.updateOne",
+                            message: "attempt to update blog entry failed",
+                        },
                     });
                 }
 
-                if(res.matchedCount === 1)
-                {
+                if (res.matchedCount === 1) {
                     // успешное выполнение
                     return null;
                 }
-            }
-            else {
+            } else {
                 throw new CustomError({
-                    errorMessage: { field: 'ObjectId.isValid(blogId)', message: 'invalid blog ID' }
+                    errorMessage: {
+                        field: "ObjectId.isValid(blogId)",
+                        message: "invalid blog ID",
+                    },
                 });
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 return undefined;
-            }
-            else
-            {
-                console.error(`Unknown error inside dataCommandRepository.updateBlog: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in updateBlog method of dataCommandRepository');
+            } else {
+                console.error(
+                    `Unknown error inside dataCommandRepository.updateBlog: ${JSON.stringify(error)}`,
+                );
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in updateBlog method of dataCommandRepository",
+                );
             }
         }
     },
 
-
     async deleteBlog(blogId: string): Promise<null | undefined> {
-
         // if (ObjectId.isValid(blogId)) {
         //     const idToCheck = new ObjectId(blogId);
         //     const res = await bloggersCollection.deleteOne({_id: idToCheck});
@@ -410,49 +412,51 @@ export const dataCommandRepository = {
         //     }
         // }
 
-        try{
+        try {
             if (ObjectId.isValid(blogId)) {
                 const idToCheck = new ObjectId(blogId);
-                const res = await bloggersCollection.deleteOne({_id: idToCheck});
+                const res = await bloggersCollection.deleteOne({
+                    _id: idToCheck,
+                });
 
-                if(!res.acknowledged)
-                {
+                if (!res.acknowledged) {
                     throw new CustomError({
-                        errorMessage: { field: 'bloggersCollection.deleteOne', message: 'attempt to delete blog entry failed' }
+                        errorMessage: {
+                            field: "bloggersCollection.deleteOne",
+                            message: "attempt to delete blog entry failed",
+                        },
                     });
                 }
 
-                if(res.deletedCount === 1)
-                {
+                if (res.deletedCount === 1) {
                     return null;
                 }
-            }
-            else {
+            } else {
                 // throw new CustomError({
                 //     errorMessage: { field: 'ObjectId.isValid(blogId)', message: 'invalid blog ID' }
                 // });
                 return undefined;
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
-                console.error(`Unknown error inside dataCommandRepository.deleteBlog: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in deleteBlog method of dataCommandRepository');
+            } else {
+                console.error(
+                    `Unknown error inside dataCommandRepository.deleteBlog: ${JSON.stringify(error)}`,
+                );
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in deleteBlog method of dataCommandRepository",
+                );
             }
         }
     },
@@ -460,10 +464,11 @@ export const dataCommandRepository = {
     // *****************************
     // методы для управления постами
     // *****************************
-    async getAllPosts(): Promise <PostViewModel[] | []> {
+    async getAllPosts(): Promise<PostViewModel[] | []> {
         // return __nonDisclosableDatabase.bloggerRepository.flatMap((element: bloggerRawData):PostViewModel[] | [] => (element.bloggerPosts ?? []));
 
-        const tempContainer: postCollectionStorageModel[] | []  = await postsCollection.find({}).toArray();
+        const tempContainer: postCollectionStorageModel[] | [] =
+            await postsCollection.find({}).toArray();
 
         // console.log('LOOK HERE ---->', tempContainer.length);
 
@@ -474,7 +479,7 @@ export const dataCommandRepository = {
             content: value.content,
             blogId: value.blogId,
             blogName: value.blogName,
-            createdAt: value.createdAt
+            createdAt: value.createdAt,
         }));
 
         // _id: ObjectId,
@@ -487,180 +492,193 @@ export const dataCommandRepository = {
         // createdAt: Date;
     },
 
-
     async createNewPost(newPost: PostInputModel): Promise<string | undefined> {
         try {
-            if (ObjectId.isValid(newPost.blogId))
-            {
-                const relatedBlogger = await findBlogByPrimaryKey(new ObjectId(newPost.blogId));
+            if (ObjectId.isValid(newPost.blogId)) {
+                const relatedBlogger = await findBlogByPrimaryKey(
+                    new ObjectId(newPost.blogId),
+                );
                 const tempId = new ObjectId();
 
-                if (relatedBlogger){
+                if (relatedBlogger) {
                     const newPostEntry = {
                         _id: tempId,
                         id: tempId.toString(),
                         ...newPost,
                         blogName: relatedBlogger.name,
-                        createdAt: new Date()
+                        createdAt: new Date(),
                     } as postCollectionStorageModel;
 
-                    const result = await postsCollection.insertOne(newPostEntry);
-                    if (!result.acknowledged)
-                    {
+                    const result =
+                        await postsCollection.insertOne(newPostEntry);
+                    if (!result.acknowledged) {
                         throw new CustomError({
-                            errorMessage: { field: 'postsCollection.insertOne(newPostEntry)', message: 'attempt to insert new post entry failed' }
+                            errorMessage: {
+                                field: "postsCollection.insertOne(newPostEntry)",
+                                message:
+                                    "attempt to insert new post entry failed",
+                            },
                         });
                     }
 
                     return result.insertedId.toString();
                     // return mapSinglePostCollectionToViewModel(newPostEntry);
-                }
-                else
-                {
+                } else {
                     throw new CustomError({
-                        errorMessage: { field: 'findBlogByPrimaryKey(new ObjectId(newPost.blogId))', message: 'attempt to find blogger failed' }
+                        errorMessage: {
+                            field: "findBlogByPrimaryKey(new ObjectId(newPost.blogId))",
+                            message: "attempt to find blogger failed",
+                        },
                     });
                 }
-            }
-            else{
+            } else {
                 throw new CustomError({
-                    errorMessage: { field: 'ObjectId.isValid(newPost.blogId)', message: 'invalid blogId' }
+                    errorMessage: {
+                        field: "ObjectId.isValid(newPost.blogId)",
+                        message: "invalid blogId",
+                    },
                 });
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
-                console.error(`Unknown error inside dataCommandRepository.createNewPost: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewPost method of dataCommandRepository');
+            } else {
+                console.error(
+                    `Unknown error inside dataCommandRepository.createNewPost: ${JSON.stringify(error)}`,
+                );
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in createNewPost method of dataCommandRepository",
+                );
             }
         }
     },
 
-
-    async createNewBlogPost(sentBlogId: string, newPost: BlogPostInputModel): Promise<string | undefined> {
+    async createNewBlogPost(
+        sentBlogId: string,
+        newPost: BlogPostInputModel,
+    ): Promise<string | undefined> {
         try {
-
-            if (ObjectId.isValid(sentBlogId))
-            {
-                const relatedBlogger = await findBlogByPrimaryKey(new ObjectId(sentBlogId));
+            if (ObjectId.isValid(sentBlogId)) {
+                const relatedBlogger = await findBlogByPrimaryKey(
+                    new ObjectId(sentBlogId),
+                );
                 const tempId = new ObjectId();
 
-                if (relatedBlogger){
+                if (relatedBlogger) {
                     const newPostEntry = {
                         _id: tempId,
                         id: tempId.toString(),
                         ...newPost,
                         blogId: sentBlogId,
                         blogName: relatedBlogger.name,
-                        createdAt: new Date()
+                        createdAt: new Date(),
                     } as postCollectionStorageModel;
 
-                    const result = await postsCollection.insertOne(newPostEntry);
-                    if (!result.acknowledged)
-                    {
+                    const result =
+                        await postsCollection.insertOne(newPostEntry);
+                    if (!result.acknowledged) {
                         throw new CustomError({
-                            errorMessage: { field: 'postsCollection.insertOne(newPostEntry)', message: 'attempt to insert new post entry failed' }
+                            errorMessage: {
+                                field: "postsCollection.insertOne(newPostEntry)",
+                                message:
+                                    "attempt to insert new post entry failed",
+                            },
                         });
                     }
 
                     return result.insertedId.toString();
                 }
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
+            } else {
                 console.error(`Unknown error: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewBlogPost method of dataCommandRepository');
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in createNewBlogPost method of dataCommandRepository",
+                );
             }
         }
     },
 
-
-    async updatePost(postId: string, newData: PostInputModel): Promise<null | undefined> {
-        try{
+    async updatePost(
+        postId: string,
+        newData: PostInputModel,
+    ): Promise<null | undefined> {
+        try {
             if (ObjectId.isValid(postId)) {
-
                 const idToCheck = new ObjectId(postId);
                 const res = await postsCollection.updateOne(
-                    {_id: idToCheck},
-                    {$set: {...newData}}
+                    { _id: idToCheck },
+                    { $set: { ...newData } },
                 );
 
-                if(!res.acknowledged)
-                {
+                if (!res.acknowledged) {
                     throw new CustomError({
-                        errorMessage: { field: 'postsCollection.updateOne', message: 'attempt to update post entry failed' }
+                        errorMessage: {
+                            field: "postsCollection.updateOne",
+                            message: "attempt to update post entry failed",
+                        },
                     });
                 }
 
-                if(res.matchedCount === 1)
-                {
+                if (res.matchedCount === 1) {
                     // успешное выполнение
                     return null;
                 }
-            }
-            else {
+            } else {
                 throw new CustomError({
-                    errorMessage: { field: 'ObjectId.isValid(postId)', message: 'invalid post ID' }
+                    errorMessage: {
+                        field: "ObjectId.isValid(postId)",
+                        message: "invalid post ID",
+                    },
                 });
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
-                console.error(`Unknown error inside dataCommandRepository.updatePost: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in updatePost method of dataCommandRepository');
+            } else {
+                console.error(
+                    `Unknown error inside dataCommandRepository.updatePost: ${JSON.stringify(error)}`,
+                );
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in updatePost method of dataCommandRepository",
+                );
             }
         }
     },
 
-
     async deletePost(postId: string): Promise<null | undefined> {
-
         // if (ObjectId.isValid(postId)) {
         //     const idToCheck = new ObjectId(postId);
         //     const res = await postsCollection.deleteOne({_id: idToCheck});
@@ -671,60 +689,66 @@ export const dataCommandRepository = {
         //     }
         // }
 
-        try{
+        try {
             if (ObjectId.isValid(postId)) {
                 const idToCheck = new ObjectId(postId);
-                const res = await postsCollection.deleteOne({_id: idToCheck});
+                const res = await postsCollection.deleteOne({ _id: idToCheck });
 
-                if(!res.acknowledged)
-                {
+                if (!res.acknowledged) {
                     throw new CustomError({
-                        errorMessage: { field: 'postsCollection.deleteOne', message: 'attempt to delete post entry failed' }
+                        errorMessage: {
+                            field: "postsCollection.deleteOne",
+                            message: "attempt to delete post entry failed",
+                        },
                     });
                 }
 
-                if(res.deletedCount === 1)
-                {
+                if (res.deletedCount === 1) {
                     return null;
                 }
-            }
-            else {
+            } else {
                 throw new CustomError({
-                    errorMessage: { field: 'ObjectId.isValid(postId)', message: 'invalid post ID' }
+                    errorMessage: {
+                        field: "ObjectId.isValid(postId)",
+                        message: "invalid post ID",
+                    },
                 });
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
-                console.error(`Unknown error inside dataCommandRepository.deletePost: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in deletePost method of dataCommandRepository');
+            } else {
+                console.error(
+                    `Unknown error inside dataCommandRepository.deletePost: ${JSON.stringify(error)}`,
+                );
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in deletePost method of dataCommandRepository",
+                );
             }
         }
     },
-
 
     // *****************************
     // методы для управления юзерами
     // *****************************
 
-    async createNewUser(sentNewUser: UserInputModel): Promise<string | undefined> {
+    async createNewUser(
+        sentNewUser: UserInputModel,
+    ): Promise<string | undefined> {
         try {
-            const passwordHash = await bcryptService.generateHash(sentNewUser.password);
+            const passwordHash = await bcryptService.generateHash(
+                sentNewUser.password,
+            );
 
             const tempId = new ObjectId();
             const newUserEntry = {
@@ -740,89 +764,86 @@ export const dataCommandRepository = {
 
             const result = await usersCollection.insertOne(newUserEntry);
 
-            if (!result.acknowledged)
-            {
+            if (!result.acknowledged) {
                 throw new CustomError({
-                    errorMessage: { field: 'usersCollection.insertOne(newUserEntry)', message: 'attempt to insert new user entry failed' }
+                    errorMessage: {
+                        field: "usersCollection.insertOne(newUserEntry)",
+                        message: "attempt to insert new user entry failed",
+                    },
                 });
             }
             // console.log(JSON.stringify(newUserEntry));
             // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
             return result.insertedId.toString();
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 return undefined;
-            }
-            else
-            {
+            } else {
                 console.error(`Unknown error: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewUser method of dataCommandRepository');
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in createNewUser method of dataCommandRepository",
+                );
             }
         }
     },
 
-
     async deleteUser(userId: string): Promise<null | undefined> {
-
-        try{
+        try {
             if (ObjectId.isValid(userId)) {
                 const idToCheck = new ObjectId(userId);
-                const res = await usersCollection.deleteOne({_id: idToCheck});
+                const res = await usersCollection.deleteOne({ _id: idToCheck });
 
-                if(!res.acknowledged)
-                {
+                if (!res.acknowledged) {
                     throw new CustomError({
-                        errorMessage: { field: 'usersCollection.deleteOne', message: 'attempt to delete user entry failed' }
+                        errorMessage: {
+                            field: "usersCollection.deleteOne",
+                            message: "attempt to delete user entry failed",
+                        },
                     });
                 }
 
-                if(res.deletedCount === 1)
-                {
+                if (res.deletedCount === 1) {
                     return null;
                 }
-            }
-            else {
+            } else {
                 // throw new CustomError({
                 //     errorMessage: { field: 'ObjectId.isValid(userId)', message: 'invalid user ID' }
                 // });
 
                 return undefined;
             }
-        }
-        catch (error) {
-            if(error instanceof CustomError) {
-                if(error.metaData)
-                {
+        } catch (error) {
+            if (error instanceof CustomError) {
+                if (error.metaData) {
                     const errorData = error.metaData.errorMessage;
-                    console.error(`In field: ${errorData.field} - ${errorData.message}`);
-                }
-                else
-                {
+                    console.error(
+                        `In field: ${errorData.field} - ${errorData.message}`,
+                    );
+                } else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
                 // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
-            }
-            else
-            {
-                console.error(`Unknown error inside dataCommandRepository.deleteUser: ${JSON.stringify(error)}`);
-                throw new Error('Placeholder for an error to be rethrown and dealt with in the future in deleteUser method of dataCommandRepository');
+            } else {
+                console.error(
+                    `Unknown error inside dataCommandRepository.deleteUser: ${JSON.stringify(error)}`,
+                );
+                throw new Error(
+                    "Placeholder for an error to be rethrown and dealt with in the future in deleteUser method of dataCommandRepository",
+                );
             }
         }
     },
-
 
     // *****************************
     // методы для тестов
@@ -832,5 +853,4 @@ export const dataCommandRepository = {
         await postsCollection.deleteMany({});
         await usersCollection.deleteMany({});
     },
-
-}
+};

@@ -5,18 +5,18 @@ import { authService } from "../../service-layer(BLL)/auth-service";
 import { HttpStatus } from "../util-enums/http-statuses";
 
 export const attemptToLogin = async (
-  req: Request<{}, {}, LoginInputModel, {}>,
-  res: Response,
+    req: Request<{}, {}, LoginInputModel, {}>,
+    res: Response,
 ) => {
-  // const sanitizedQuery = matchedData<LoginInputModel>(req, {
-  //     locations: ['query'],
-  //     includeOptionals: true,
-  // });
+    // const sanitizedQuery = matchedData<LoginInputModel>(req, {
+    //     locations: ['query'],
+    //     includeOptionals: true,
+    // });
 
-  const { loginOrEmail, password } = req.body;
-  const accessToken = await authService.loginUser(loginOrEmail, password);
+    const { loginOrEmail, password } = req.body;
+    const accessToken = await authService.loginUser(loginOrEmail, password);
 
-  if (!accessToken) return res.sendStatus(HttpStatus.Unauthorized);
+    if (!accessToken) return res.sendStatus(HttpStatus.Unauthorized);
 
-  return res.status(HttpStatus.NoContent).end(); // статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет, поэтому можно дать .end() в конце
+    return res.status(HttpStatus.NoContent).end(); // статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет, поэтому можно дать .end() в конце
 };

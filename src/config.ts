@@ -5,17 +5,20 @@ import "dotenv/config";
 
 // дефолтные значения параметров
 const DEFAULT_PORT = "3003";
+const DEFAULT_JWT_EXPIRES_IN = "60";
 
 // структура конфигурационных значений
 type Config = {
     appPort: number;
     jwtSecret: string;
+    jwtExpiresIn: number;
 };
 
 // парсинг значений
 const getConfig = (): Config => {
     let appPort = process.env.PORT;
     let jwtSecret = process.env.JWT_SECRET;
+    let jwtExpiresIn = process.env.JWT_EXPIRES_IN;
 
     // валидация
     if (!appPort) {
@@ -31,9 +34,17 @@ const getConfig = (): Config => {
     // }
     if (!jwtSecret) throw new Error("JWT_SECRET is required in .env");
 
+    if (!jwtExpiresIn) {
+        console.warn(
+            `JWT_EXPIRES_IN is not defined in .env! Applied default port number: ${DEFAULT_JWT_EXPIRES_IN}.`,
+        );
+        jwtExpiresIn = DEFAULT_PORT;
+    }
+
     return {
         appPort: parseInt(appPort, 10),
         jwtSecret,
+        jwtExpiresIn: parseInt(jwtExpiresIn, 10),
     };
 };
 

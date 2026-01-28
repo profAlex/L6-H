@@ -1,7 +1,30 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+// import dotenv from "dotenv";
+// dotenv.config();
 Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+exports.envConfig = void 0;
+require("dotenv/config");
+// дефолтные значения параметров
+const DEFAULT_PORT = "3003";
+// парсинг значений
+const getConfig = () => {
+    let appPort = process.env.PORT;
+    let jwtSecret = process.env.JWT_SECRET;
+    // валидация
+    if (!appPort) {
+        console.warn(`PORT is not defined in .env! Applied default port number ${DEFAULT_PORT}.`);
+        appPort = DEFAULT_PORT;
+    }
+    //
+    // if (!jwtSecret) {
+    //   console.warn("JWT_SECRET is not defined in .env! Applied default port number 3003.");
+    //   jwtSecret = "3003";
+    // }
+    if (!jwtSecret)
+        throw new Error("JWT_SECRET is required in .env");
+    return {
+        appPort: parseInt(appPort, 10),
+        jwtSecret,
+    };
+};
+exports.envConfig = getConfig();

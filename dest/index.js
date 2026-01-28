@@ -16,10 +16,10 @@ exports.startApp = void 0;
 const express_1 = __importDefault(require("express"));
 const setup_app_1 = require("./setup-app");
 const mongo_db_1 = require("./db/mongo.db");
-require("./config");
+const config_1 = require("./config");
 const app = (0, express_1.default)();
 (0, setup_app_1.setupApp)(app);
-const PORT = process.env.PORT || 3003;
+const PORT = config_1.envConfig.appPort;
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, mongo_db_1.runDB)();
     app.listen(PORT, () => {
