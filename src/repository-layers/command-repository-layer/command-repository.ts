@@ -11,7 +11,7 @@ import { BlogPostInputModel } from "../../routers/router-types/blog-post-input-m
 import { CustomError } from "../utility/custom-error-class";
 import { UserInputModel } from "../../routers/router-types/user-input-model";
 import { UserViewModel } from "../../routers/router-types/user-view-model";
-import { bcryptService } from "../../authentication/bcrypt";
+import { bcryptService } from "../../adapters/authentication/bcrypt-service";
 import { UserCollectionStorageModel } from "../../routers/router-types/user-storage-model";
 
 export type bloggerCollectionStorageModel = {

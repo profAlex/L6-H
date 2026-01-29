@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { envConfig } from "../config";
-import { JwtPayloadType } from "./payload-type";
+import { envConfig } from "../../config";
+import { JwtPayloadType } from "../payload-type";
 
 export const jwtService = {
     async createToken(payload: JwtPayloadType): Promise<string | null> {

@@ -1,5 +1,6 @@
 import { dataQueryRepository } from "../repository-layers/query-repository-layer/query-repository";
-import { bcryptService } from "../authentication/bcrypt";
+import { bcryptService } from "../adapters/authentication/bcrypt-service";
+import { jwtService } from "../adapters/verification/jwt-service";
 
 export const authService = {
     async loginUser(
@@ -15,9 +16,9 @@ export const authService = {
             return null;
         }
 
-        const token = await
+        const token = await jwtService.createToken();
 
-        return { accessToken: "token" };
+        return { token };
     },
 
     async checkUserCredentials(
