@@ -1,1 +1,1 @@
-export type UserIdType = { userId: string };
+export type UserIdType = { userId: string | null };

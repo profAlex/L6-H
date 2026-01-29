@@ -1,9 +1,11 @@
-import {Request, Response, NextFunction, json} from "express";
-import {ObjectId} from "mongodb";
-import {HttpStatus} from "../util-enums/http-statuses";
-import {postsCollection, bloggersCollection, usersCollection} from "../../db/mongo.db";
-
-
+import { Request, Response, NextFunction, json } from "express";
+import { ObjectId } from "mongodb";
+import { HttpStatus } from "../../common/http-statuses/http-statuses";
+import {
+    postsCollection,
+    bloggersCollection,
+    usersCollection,
+} from "../../db/mongo.db";
 
 // Тип запроса с параметром ID и опциональным query
 // такой смешанный тип необходим для того чтобы можно было пользоваться одной и той же функцией
@@ -22,12 +24,13 @@ type IdValidatorConfig<ParamKey extends string> = {
     collectionName: string;
 };
 
-export function createIdValidator<ParamKey extends string, Query = any>
-(config: IdValidatorConfig<ParamKey>) {
+export function createIdValidator<ParamKey extends string, Query = any>(
+    config: IdValidatorConfig<ParamKey>,
+) {
     return async (
         req: IdValidatorRequest<ParamKey, Query>,
         res: Response,
-        next: NextFunction
+        next: NextFunction,
     ) => {
         // req.params — это объект, содержащий параметры URL из маршрута Express
         // Например, для маршрута /users/:blogId параметр id будет доступен как req.params.blogId
@@ -44,55 +47,54 @@ export function createIdValidator<ParamKey extends string, Query = any>
 async function validateId(
     sentId: string | undefined,
     collectionName: string,
-    res: Response
+    res: Response,
 ): Promise<boolean> {
     if (!sentId) {
         res.status(HttpStatus.BadRequest).json({
-            error: 'ID parameter is required'
+            error: "ID parameter is required",
         });
         return false;
     }
 
     if (!ObjectId.isValid(sentId)) {
         res.status(HttpStatus.BadRequest).json({
-            error: `Sent ID: ${sentId} is invalid`
+            error: `Sent ID: ${sentId} is invalid`,
         });
         return false;
     }
 
     let result;
     try {
-        if(collectionName === 'bloggersCollection') {
+        if (collectionName === "bloggersCollection") {
             result = await bloggersCollection.findOne(
                 { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } }
+                { projection: { _id: 1 } },
             );
-        }
-        else if (collectionName === 'postsCollection') {
+        } else if (collectionName === "postsCollection") {
             result = await postsCollection.findOne(
                 { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } }
+                { projection: { _id: 1 } },
             );
-        }
-        else if (collectionName === 'usersCollection') {
+        } else if (collectionName === "usersCollection") {
             result = await usersCollection.findOne(
                 { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } }
+                { projection: { _id: 1 } },
             );
-        }
-        else{
+        } else {
             result = null;
         }
 
         if (!result) {
-            res.status(HttpStatus.NotFound).json({ error: `ID ${sentId} not found` });
+            res.status(HttpStatus.NotFound).json({
+                error: `ID ${sentId} not found`,
+            });
             return false;
         }
 
         return true;
     } catch (err) {
         res.status(HttpStatus.InternalServerError).json({
-            error: 'Internal server error during ID validation'
+            error: "Internal server error during ID validation",
         });
         return false;
     }
