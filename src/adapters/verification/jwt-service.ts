@@ -17,7 +17,7 @@ export const jwtService = {
                 statusCode: HttpStatus.InternalServerError,
                 statusDescription:
                     "Failed attempt to check credentials login or password",
-                errorMetaData: [
+                errorsMessages: [
                     {
                         field: "createToken -> if (!payload.userId)",
                         message: "userId is empty",
@@ -34,7 +34,7 @@ export const jwtService = {
             return {
                 data: resultedToken,
                 statusCode: HttpStatus.NoContent,
-                errorMetaData: [{ field: null, message: null }],
+                errorsMessages: [{ field: null, message: null }],
             };
         } catch (e: unknown) {
             console.error("Can't sign with JWT service: ", e);
@@ -43,7 +43,7 @@ export const jwtService = {
                 statusCode: HttpStatus.InternalServerError,
                 statusDescription:
                     "Failed attempt to check credentials login or password",
-                errorMetaData: [
+                errorsMessages: [
                     {
                         field: "createToken -> jwt.sign()",
                         message:
@@ -67,7 +67,14 @@ export const jwtService = {
         try {
             return jwt.verify(token, envConfig.jwtSecret) as JwtPayloadType;
         } catch (e: unknown) {
-            console.error("Token verification with JWT service error: ", e);
+            if (e instanceof Error) {
+                console.error("Token verification error with JWT service: ", e);
+            } else {
+                console.error(
+                    "Unknown error with JWT verification service: ",
+                    e,
+                );
+            }
             return null;
         }
     },

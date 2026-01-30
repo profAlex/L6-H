@@ -18,7 +18,7 @@ export const authService = {
                 data: null,
                 statusCode: HttpStatus.NotFound,
                 statusDescription: "Wrong login or password", // по сути это "User does not exist", но на фронт такие детали не должны утекать
-                errorMetaData: [
+                errorsMessages: [
                     {
                         field: "dataQueryRepository.findByLoginOrEmail", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
                         message: "User does not exist",
@@ -36,7 +36,7 @@ export const authService = {
                 data: null,
                 statusCode: HttpStatus.Unauthorized,
                 statusDescription: "Wrong login or password",
-                errorMetaData: [
+                errorsMessages: [
                     {
                         field: "loginUser -> checkUserCredentials",
                         message: "Wrong login or password",
@@ -49,7 +49,7 @@ export const authService = {
                 statusCode: HttpStatus.InternalServerError,
                 statusDescription:
                     "Failed attempt to check credentials login or password",
-                errorMetaData: [
+                errorsMessages: [
                     {
                         field: "loginUser -> checkUserCredentials",
                         message:
