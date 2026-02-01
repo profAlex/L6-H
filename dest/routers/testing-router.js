@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.testingRouter = void 0;
 const express_1 = require("express");
 const command_repository_1 = require("../repository-layers/command-repository-layer/command-repository");
-const http_statuses_1 = require("./util-enums/http-statuses");
+const http_statuses_1 = require("../common/http-statuses/http-statuses");
 exports.testingRouter = (0, express_1.Router)();
-exports.testingRouter.delete('/all-data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.testingRouter.delete("/all-data", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield command_repository_1.dataCommandRepository.deleteAllBloggers();
     res.sendStatus(http_statuses_1.HttpStatus.NoContent);
 }));

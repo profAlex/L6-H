@@ -4,11 +4,16 @@ import { postsService } from "../../service-layer(BLL)/posts-service";
 import { InputGetPostsQuery } from "../router-types/post-search-input-model";
 import { matchedData } from "express-validator";
 import { dataQueryRepository } from "../../repository-layers/query-repository-layer/query-repository";
+import { UserIdType } from "../router-types/user-id-type";
+import {
+    RequestWithBodyAndUserId,
+    RequestWithParamsAndBodyAndUserId,
+    RequestWithUserId,
+} from "../request-types/request-types";
+import { CommentInputModel } from "../router-types/comment-input-model";
+import { IdParamName } from "../util-enums/id-names";
 
-export const getSeveralPosts = async (
-    req: Request<any, any, any, InputGetPostsQuery>,
-    res: Response,
-) => {
+export const getSeveralPosts = async (req: Request, res: Response) => {
     const sanitizedQuery = matchedData<InputGetPostsQuery>(req, {
         locations: ["query"],
         includeOptionals: true,
@@ -70,3 +75,18 @@ export const deletePost = async (req: Request, res: Response) => {
 
     res.sendStatus(HttpStatus.NoContent);
 };
+
+export const createNewComment = async (
+    req: RequestWithParamsAndBodyAndUserId<
+        { [IdParamName.PostId]: string },
+        CommentInputModel,
+        UserIdType
+    >,
+    res: Response,
+) => {};
+
+// req: RequestWithParamsAndBodyAndUserId<
+//     IdParamName.PostId,
+//     CommentInputModel,
+//     UserIdType
+// >,

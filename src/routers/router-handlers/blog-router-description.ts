@@ -6,10 +6,7 @@ import { matchedData } from "express-validator";
 import { InputGetBlogPostsByIdQuery } from "../router-types/blog-search-by-id-input-model";
 import { dataQueryRepository } from "../../repository-layers/query-repository-layer/query-repository";
 
-export const getSeveralBlogs = async (
-    req: Request<{}, {}, {}, InputGetBlogsQuery>,
-    res: Response,
-) => {
+export const getSeveralBlogs = async (req: Request, res: Response) => {
     const sanitizedQuery = matchedData<InputGetBlogsQuery>(req, {
         locations: ["query"],
         includeOptionals: true,
@@ -42,10 +39,7 @@ export const createNewBlog = async (req: Request, res: Response) => {
     return;
 };
 
-export const getSeveralPostsFromBlog = async (
-    req: Request<{ blogId: string }, {}, {}, InputGetBlogPostsByIdQuery>,
-    res: Response,
-) => {
+export const getSeveralPostsFromBlog = async (req: Request, res: Response) => {
     const sanitizedQuery = matchedData<InputGetBlogPostsByIdQuery>(req, {
         locations: ["query"],
         includeOptionals: true,

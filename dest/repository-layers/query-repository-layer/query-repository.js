@@ -18,6 +18,7 @@ const map_paginated_blog_search_1 = require("../mappers/map-paginated-blog-searc
 const map_paginated_post_search_1 = require("../mappers/map-paginated-post-search");
 const map_paginated_user_search_1 = require("../mappers/map-paginated-user-search");
 const map_to_UserViewModel_1 = require("../mappers/map-to-UserViewModel");
+const map_to_UserMeViewModel_1 = require("../mappers/map-to-UserMeViewModel");
 function findBlogByPrimaryKey(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return mongo_db_1.bloggersCollection.findOne({ _id: id });
@@ -39,20 +40,30 @@ exports.dataQueryRepository = {
     // *****************************
     getSeveralBlogs(sentInputGetBlogsQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize, } = sentInputGetBlogsQuery;
+            const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } = sentInputGetBlogsQuery;
             let filter = {};
             const skip = (pageNumber - 1) * pageSize;
             try {
-                if (searchNameTerm && searchNameTerm.trim() !== '') {
+                if (searchNameTerm && searchNameTerm.trim() !== "") {
                     // Экранируем спецсимволы для безопасного $regex
                     const escapedSearchTerm = searchNameTerm
                         .trim()
-                        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
                     filter = {
                         $or: [
-                            { name: { $regex: escapedSearchTerm, $options: 'i' } },
-                            { description: { $regex: escapedSearchTerm, $options: 'i' } },
-                            { websiteUrl: { $regex: escapedSearchTerm, $options: 'i' } },
+                            { name: { $regex: escapedSearchTerm, $options: "i" } },
+                            {
+                                description: {
+                                    $regex: escapedSearchTerm,
+                                    $options: "i",
+                                },
+                            },
+                            {
+                                websiteUrl: {
+                                    $regex: escapedSearchTerm,
+                                    $options: "i",
+                                },
+                            },
                         ],
                     };
                 }
@@ -85,7 +96,7 @@ exports.dataQueryRepository = {
     },
     getSeveralPostsById(sentBlogId, sentSanitizedQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { sortBy, sortDirection, pageNumber, pageSize, } = sentSanitizedQuery;
+            const { sortBy, sortDirection, pageNumber, pageSize } = sentSanitizedQuery;
             const skip = (pageNumber - 1) * pageSize;
             if (!sortBy) {
                 console.error("Error: sortBy is null or undefined inside dataQueryRepository.getSeveralPostsById");
@@ -101,7 +112,9 @@ exports.dataQueryRepository = {
                 // ограничивает количество возвращаемых документов до значения pageSize
                 .limit(pageSize)
                 .toArray();
-            const totalCount = yield mongo_db_1.postsCollection.countDocuments({ blogId: sentBlogId });
+            const totalCount = yield mongo_db_1.postsCollection.countDocuments({
+                blogId: sentBlogId,
+            });
             return (0, map_paginated_post_search_1.mapToPostListPaginatedOutput)(items, {
                 pageNumber: pageNumber,
                 pageSize: pageSize,
@@ -125,7 +138,7 @@ exports.dataQueryRepository = {
     // *****************************
     getSeveralPosts(sentSanitizedQuery) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { sortBy, sortDirection, pageNumber, pageSize, } = sentSanitizedQuery;
+            const { sortBy, sortDirection, pageNumber, pageSize } = sentSanitizedQuery;
             const skip = (pageNumber - 1) * pageSize;
             if (!sortBy) {
                 console.error("ERROR: sortBy is null or undefined inside dataQueryRepository.getSeveralPosts");
@@ -170,41 +183,37 @@ exports.dataQueryRepository = {
             const skip = (pageNumber - 1) * pageSize;
             try {
                 // добавление первого условия (если было передано)
-                if (searchEmailTerm && searchEmailTerm.trim() !== '') {
+                if (searchEmailTerm && searchEmailTerm.trim() !== "") {
                     // экранируем спецсимволы для безопасного $regex
                     const escapedSearchTerm = searchEmailTerm
                         .trim()
-                        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
                     const additionalFilterCondition = {
-                        email: { $regex: escapedSearchTerm, $options: 'i' }
+                        email: { $regex: escapedSearchTerm, $options: "i" },
                     };
                     if (filter.$or) {
                         filter.$or.push(additionalFilterCondition);
                     }
                     else {
                         filter = {
-                            $or: [
-                                additionalFilterCondition,
-                            ]
+                            $or: [additionalFilterCondition],
                         };
                     }
                 }
                 // добавление второго условия (если было передано)
-                if (searchLoginTerm && searchLoginTerm.trim() !== '') {
+                if (searchLoginTerm && searchLoginTerm.trim() !== "") {
                     const escapedSearchTerm = searchLoginTerm
                         .trim()
-                        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
                     const additionalFilterCondition = {
-                        login: { $regex: escapedSearchTerm, $options: 'i' }
+                        login: { $regex: escapedSearchTerm, $options: "i" },
                     };
                     if (filter.$or) {
                         filter.$or.push(additionalFilterCondition);
                     }
                     else {
                         filter = {
-                            $or: [
-                                additionalFilterCondition,
-                            ]
+                            $or: [additionalFilterCondition],
                         };
                     }
                 }
@@ -254,6 +263,20 @@ exports.dataQueryRepository = {
         });
     },
     // *****************************
+    // методы для auth
+    // *****************************
+    findUserForMe(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (mongodb_1.ObjectId.isValid(userId)) {
+                const user = yield findUserByPrimaryKey(new mongodb_1.ObjectId(userId));
+                if (user) {
+                    return (0, map_to_UserMeViewModel_1.mapSingleUserCollectionToMeViewModel)(user);
+                }
+            }
+            return undefined;
+        });
+    },
+    // *****************************
     // методы для тестов
     // *****************************
     returnBloggersAmount() {
@@ -265,5 +288,5 @@ exports.dataQueryRepository = {
         return __awaiter(this, void 0, void 0, function* () {
             return yield mongo_db_1.usersCollection.countDocuments();
         });
-    }
+    },
 };

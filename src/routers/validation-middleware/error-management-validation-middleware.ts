@@ -46,7 +46,7 @@ const formatErrors = (error: ValidationError): ValidationErrorType => {
 };
 
 export const inputErrorManagementMiddleware = (
-    req: Request<{}, {}, {}, {}>,
+    req: Request,
     res: Response,
     next: NextFunction,
 ) => {

@@ -111,5 +111,6 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include": ["src/**/*"],
-  "exclude": ["__tests__", "dest", "node_modules"]
+  "exclude": ["__tests__", "dest", "node_modules"],
+  "files": ["src/routers/router-types/index.d.ts"]
 }

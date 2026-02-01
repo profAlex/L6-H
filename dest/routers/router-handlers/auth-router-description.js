@@ -9,18 +9,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.attemptToLogin = void 0;
+exports.provideUserInfo = exports.attemptToLogin = void 0;
 const auth_service_1 = require("../../service-layer(BLL)/auth-service");
-const http_statuses_1 = require("../util-enums/http-statuses");
+const http_statuses_1 = require("../../common/http-statuses/http-statuses");
+const query_repository_1 = require("../../repository-layers/query-repository-layer/query-repository");
 const attemptToLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const sanitizedQuery = matchedData<LoginInputModel>(req, {
-    //     locations: ['query'],
-    //     includeOptionals: true,
-    // });
     const { loginOrEmail, password } = req.body;
-    const accessToken = yield auth_service_1.authService.loginUser(loginOrEmail, password);
-    if (!accessToken)
-        return res.sendStatus(http_statuses_1.HttpStatus.Unauthorized);
-    return res.status(http_statuses_1.HttpStatus.NoContent).end(); // статус 204 не предполагает наличие тела ответа. но без send() совсем - роут виснет, поэтому можно дать .end() в конце
+    const loginResult = yield auth_service_1.authService.loginUser(loginOrEmail, password);
+    if (!loginResult.data)
+        return res
+            .status(loginResult.statusCode)
+            .send(loginResult.errorsMessages);
+    return res.status(http_statuses_1.HttpStatus.Ok).send(loginResult.data);
 });
 exports.attemptToLogin = attemptToLogin;
+const provideUserInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.user) {
+        console.error("req.user is not found");
+        return res
+            .status(http_statuses_1.HttpStatus.InternalServerError)
+            .json("Not authorized");
+    }
+    const userId = req.user.userId;
+    if (!userId) {
+        console.error("userId inside req.user is undefined or null");
+        return res
+            .status(http_statuses_1.HttpStatus.InternalServerError)
+            .json("Not authorized");
+    }
+    const userInfo = yield query_repository_1.dataQueryRepository.findUserForMe(userId);
+    return res.status(http_statuses_1.HttpStatus.Ok).send(userInfo);
+});
+exports.provideUserInfo = provideUserInfo;

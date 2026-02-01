@@ -9,14 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.db = exports.usersCollection = exports.postsCollection = exports.bloggersCollection = exports.client = void 0;
+exports.db = exports.commentsCollection = exports.usersCollection = exports.postsCollection = exports.bloggersCollection = exports.client = void 0;
 exports.runDB = runDB;
 exports.closeDB = closeDB;
 const mongodb_1 = require("mongodb");
-const DB_NAME = 'bloggers_db';
-const BLOGGERS_COLLECTION_NAME = 'bloggers_collection';
-const POSTS_COLLECTION_NAME = 'posts_collection';
-const USERS_COLLECTION_NAME = 'users_collection';
+const DB_NAME = "bloggers_db";
+const BLOGGERS_COLLECTION_NAME = "bloggers_collection";
+const POSTS_COLLECTION_NAME = "posts_collection";
+const USERS_COLLECTION_NAME = "users_collection";
+const COMMENTS_COLLECTION_NAME = "comments_collection";
 const URI = "mongodb+srv://admin:admin@learningcluster.f1zm90x.mongodb.net/?retryWrites=true&w=majority&appName=LearningCluster";
 let db = null;
 exports.db = db;
@@ -28,6 +29,7 @@ function runDB() {
         exports.bloggersCollection = db.collection(BLOGGERS_COLLECTION_NAME);
         exports.postsCollection = db.collection(POSTS_COLLECTION_NAME);
         exports.usersCollection = db.collection(USERS_COLLECTION_NAME);
+        exports.commentsCollection = db.collection(COMMENTS_COLLECTION_NAME);
         try {
             yield exports.client.connect();
             yield db.command({ ping: 1 });
@@ -44,13 +46,13 @@ function closeDB() {
         try {
             if (exports.client) {
                 yield exports.client.close();
-                console.log('🛑 MongoDB connection closed');
+                console.log("🛑 MongoDB connection closed");
                 exports.client = null;
                 exports.db = db = null;
             }
         }
         catch (error) {
-            console.error('Error: ', error);
+            console.error("Error: ", error);
         }
     });
 }

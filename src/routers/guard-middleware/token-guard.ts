@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { RequestWithUserId } from "../request-types/request-types";
+import {
+    RequestWithParamsAndBodyAndUserId,
+    RequestWithUserId,
+} from "../request-types/request-types";
 import { UserIdType } from "../router-types/user-id-type";
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { JwtPayloadType } from "../../adapters/verification/payload-type";
 import { jwtService } from "../../adapters/verification/jwt-service";
+import { CommentInputModel } from "../router-types/comment-input-model";
+import { IdParamName } from "../util-enums/id-names";
 
 export const tokenGuardVerification = async (
-    req: RequestWithUserId<UserIdType>,
+    req: Request,
     res: Response,
     next: NextFunction,
 ) => {

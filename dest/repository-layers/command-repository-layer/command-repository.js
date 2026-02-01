@@ -13,7 +13,7 @@ exports.dataCommandRepository = void 0;
 const mongo_db_1 = require("../../db/mongo.db");
 const mongodb_1 = require("mongodb");
 const custom_error_class_1 = require("../utility/custom-error-class");
-const bcypt_1 = require("../../authentication/bcypt");
+const bcrypt_service_1 = require("../../adapters/authentication/bcrypt-service");
 // const __nonDisclosableDatabase = {
 //     bloggerRepository: [{
 //         bloggerInfo:
@@ -205,7 +205,10 @@ exports.dataCommandRepository = {
                 const result = yield mongo_db_1.bloggersCollection.insertOne(newBlogEntry);
                 if (!result.acknowledged) {
                     throw new custom_error_class_1.CustomError({
-                        errorMessage: { field: 'bloggersCollection.insertOne(newBlogEntry)', message: 'attempt to insert new blog entry failed' }
+                        errorMessage: {
+                            field: "bloggersCollection.insertOne(newBlogEntry)",
+                            message: "attempt to insert new blog entry failed",
+                        },
                     });
                 }
                 // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
@@ -225,7 +228,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository");
                 }
             }
         });
@@ -308,7 +311,10 @@ exports.dataCommandRepository = {
                     const res = yield mongo_db_1.bloggersCollection.updateOne({ _id: idToCheck }, { $set: Object.assign({}, newData) });
                     if (!res.acknowledged) {
                         throw new custom_error_class_1.CustomError({
-                            errorMessage: { field: 'bloggersCollection.updateOne', message: 'attempt to update blog entry failed' }
+                            errorMessage: {
+                                field: "bloggersCollection.updateOne",
+                                message: "attempt to update blog entry failed",
+                            },
                         });
                     }
                     if (res.matchedCount === 1) {
@@ -318,7 +324,10 @@ exports.dataCommandRepository = {
                 }
                 else {
                     throw new custom_error_class_1.CustomError({
-                        errorMessage: { field: 'ObjectId.isValid(blogId)', message: 'invalid blog ID' }
+                        errorMessage: {
+                            field: "ObjectId.isValid(blogId)",
+                            message: "invalid blog ID",
+                        },
                     });
                 }
             }
@@ -335,7 +344,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.updateBlog: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in updateBlog method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in updateBlog method of dataCommandRepository");
                 }
             }
         });
@@ -357,10 +366,15 @@ exports.dataCommandRepository = {
             try {
                 if (mongodb_1.ObjectId.isValid(blogId)) {
                     const idToCheck = new mongodb_1.ObjectId(blogId);
-                    const res = yield mongo_db_1.bloggersCollection.deleteOne({ _id: idToCheck });
+                    const res = yield mongo_db_1.bloggersCollection.deleteOne({
+                        _id: idToCheck,
+                    });
                     if (!res.acknowledged) {
                         throw new custom_error_class_1.CustomError({
-                            errorMessage: { field: 'bloggersCollection.deleteOne', message: 'attempt to delete blog entry failed' }
+                            errorMessage: {
+                                field: "bloggersCollection.deleteOne",
+                                message: "attempt to delete blog entry failed",
+                            },
                         });
                     }
                     if (res.deletedCount === 1) {
@@ -388,7 +402,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.deleteBlog: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in deleteBlog method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in deleteBlog method of dataCommandRepository");
                 }
             }
         });
@@ -408,7 +422,7 @@ exports.dataCommandRepository = {
                 content: value.content,
                 blogId: value.blogId,
                 blogName: value.blogName,
-                createdAt: value.createdAt
+                createdAt: value.createdAt,
             }));
             // _id: ObjectId,
             // id: string;
@@ -431,7 +445,10 @@ exports.dataCommandRepository = {
                         const result = yield mongo_db_1.postsCollection.insertOne(newPostEntry);
                         if (!result.acknowledged) {
                             throw new custom_error_class_1.CustomError({
-                                errorMessage: { field: 'postsCollection.insertOne(newPostEntry)', message: 'attempt to insert new post entry failed' }
+                                errorMessage: {
+                                    field: "postsCollection.insertOne(newPostEntry)",
+                                    message: "attempt to insert new post entry failed",
+                                },
                             });
                         }
                         return result.insertedId.toString();
@@ -439,13 +456,19 @@ exports.dataCommandRepository = {
                     }
                     else {
                         throw new custom_error_class_1.CustomError({
-                            errorMessage: { field: 'findBlogByPrimaryKey(new ObjectId(newPost.blogId))', message: 'attempt to find blogger failed' }
+                            errorMessage: {
+                                field: "findBlogByPrimaryKey(new ObjectId(newPost.blogId))",
+                                message: "attempt to find blogger failed",
+                            },
                         });
                     }
                 }
                 else {
                     throw new custom_error_class_1.CustomError({
-                        errorMessage: { field: 'ObjectId.isValid(newPost.blogId)', message: 'invalid blogId' }
+                        errorMessage: {
+                            field: "ObjectId.isValid(newPost.blogId)",
+                            message: "invalid blogId",
+                        },
                     });
                 }
             }
@@ -463,7 +486,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.createNewPost: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewPost method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in createNewPost method of dataCommandRepository");
                 }
             }
         });
@@ -479,7 +502,10 @@ exports.dataCommandRepository = {
                         const result = yield mongo_db_1.postsCollection.insertOne(newPostEntry);
                         if (!result.acknowledged) {
                             throw new custom_error_class_1.CustomError({
-                                errorMessage: { field: 'postsCollection.insertOne(newPostEntry)', message: 'attempt to insert new post entry failed' }
+                                errorMessage: {
+                                    field: "postsCollection.insertOne(newPostEntry)",
+                                    message: "attempt to insert new post entry failed",
+                                },
                             });
                         }
                         return result.insertedId.toString();
@@ -500,7 +526,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewBlogPost method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in createNewBlogPost method of dataCommandRepository");
                 }
             }
         });
@@ -513,7 +539,10 @@ exports.dataCommandRepository = {
                     const res = yield mongo_db_1.postsCollection.updateOne({ _id: idToCheck }, { $set: Object.assign({}, newData) });
                     if (!res.acknowledged) {
                         throw new custom_error_class_1.CustomError({
-                            errorMessage: { field: 'postsCollection.updateOne', message: 'attempt to update post entry failed' }
+                            errorMessage: {
+                                field: "postsCollection.updateOne",
+                                message: "attempt to update post entry failed",
+                            },
                         });
                     }
                     if (res.matchedCount === 1) {
@@ -523,7 +552,10 @@ exports.dataCommandRepository = {
                 }
                 else {
                     throw new custom_error_class_1.CustomError({
-                        errorMessage: { field: 'ObjectId.isValid(postId)', message: 'invalid post ID' }
+                        errorMessage: {
+                            field: "ObjectId.isValid(postId)",
+                            message: "invalid post ID",
+                        },
                     });
                 }
             }
@@ -541,7 +573,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.updatePost: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in updatePost method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in updatePost method of dataCommandRepository");
                 }
             }
         });
@@ -563,7 +595,10 @@ exports.dataCommandRepository = {
                     const res = yield mongo_db_1.postsCollection.deleteOne({ _id: idToCheck });
                     if (!res.acknowledged) {
                         throw new custom_error_class_1.CustomError({
-                            errorMessage: { field: 'postsCollection.deleteOne', message: 'attempt to delete post entry failed' }
+                            errorMessage: {
+                                field: "postsCollection.deleteOne",
+                                message: "attempt to delete post entry failed",
+                            },
                         });
                     }
                     if (res.deletedCount === 1) {
@@ -572,7 +607,10 @@ exports.dataCommandRepository = {
                 }
                 else {
                     throw new custom_error_class_1.CustomError({
-                        errorMessage: { field: 'ObjectId.isValid(postId)', message: 'invalid post ID' }
+                        errorMessage: {
+                            field: "ObjectId.isValid(postId)",
+                            message: "invalid post ID",
+                        },
                     });
                 }
             }
@@ -590,7 +628,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.deletePost: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in deletePost method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in deletePost method of dataCommandRepository");
                 }
             }
         });
@@ -601,7 +639,7 @@ exports.dataCommandRepository = {
     createNewUser(sentNewUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const passwordHash = yield bcypt_1.bcryptService.generateHash(sentNewUser.password);
+                const passwordHash = yield bcrypt_service_1.bcryptService.generateHash(sentNewUser.password);
                 const tempId = new mongodb_1.ObjectId();
                 const newUserEntry = {
                     _id: tempId,
@@ -615,7 +653,10 @@ exports.dataCommandRepository = {
                 const result = yield mongo_db_1.usersCollection.insertOne(newUserEntry);
                 if (!result.acknowledged) {
                     throw new custom_error_class_1.CustomError({
-                        errorMessage: { field: 'usersCollection.insertOne(newUserEntry)', message: 'attempt to insert new user entry failed' }
+                        errorMessage: {
+                            field: "usersCollection.insertOne(newUserEntry)",
+                            message: "attempt to insert new user entry failed",
+                        },
                     });
                 }
                 // console.log(JSON.stringify(newUserEntry));
@@ -635,7 +676,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in createNewUser method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in createNewUser method of dataCommandRepository");
                 }
             }
         });
@@ -648,7 +689,10 @@ exports.dataCommandRepository = {
                     const res = yield mongo_db_1.usersCollection.deleteOne({ _id: idToCheck });
                     if (!res.acknowledged) {
                         throw new custom_error_class_1.CustomError({
-                            errorMessage: { field: 'usersCollection.deleteOne', message: 'attempt to delete user entry failed' }
+                            errorMessage: {
+                                field: "usersCollection.deleteOne",
+                                message: "attempt to delete user entry failed",
+                            },
                         });
                     }
                     if (res.deletedCount === 1) {
@@ -676,7 +720,7 @@ exports.dataCommandRepository = {
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.deleteUser: ${JSON.stringify(error)}`);
-                    throw new Error('Placeholder for an error to be rethrown and dealt with in the future in deleteUser method of dataCommandRepository');
+                    throw new Error("Placeholder for an error to be rethrown and dealt with in the future in deleteUser method of dataCommandRepository");
                 }
             }
         });

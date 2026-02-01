@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBlog = exports.updateBlog = exports.findSingleBlog = exports.createNewBlogPost = exports.getSeveralPostsFromBlog = exports.createNewBlog = exports.getSeveralBlogs = void 0;
-const http_statuses_1 = require("../util-enums/http-statuses");
+const http_statuses_1 = require("../../common/http-statuses/http-statuses");
 const blogs_service_1 = require("../../service-layer(BLL)/blogs-service");
 const express_validator_1 = require("express-validator");
 const query_repository_1 = require("../../repository-layers/query-repository-layer/query-repository");
 const getSeveralBlogs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sanitizedQuery = (0, express_validator_1.matchedData)(req, {
-        locations: ['query'],
+        locations: ["query"],
         includeOptionals: true,
     }); //утилита для извечения трансформированных значений после валидатара
     //в req.query остаются сырые квери параметры (строки)
@@ -35,19 +35,19 @@ const createNewBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
     }
-    res.status(http_statuses_1.HttpStatus.InternalServerError).send('Unknown error while attempting to create new blog or couldn\'t return created blog from Query Database.');
+    res.status(http_statuses_1.HttpStatus.InternalServerError).send("Unknown error while attempting to create new blog or couldn't return created blog from Query Database.");
     return;
 });
 exports.createNewBlog = createNewBlog;
 const getSeveralPostsFromBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sanitizedQuery = (0, express_validator_1.matchedData)(req, {
-        locations: ['query'],
+        locations: ["query"],
         includeOptionals: true,
     }); //утилита для извечения трансформированных значений после валидатара
     //в req.query остаются сырые квери параметры (строки)
     const blogId = req.params.blogId;
     if (!blogId) {
-        res.status(400).json({ error: 'blogId is required' });
+        res.status(400).json({ error: "blogId is required" });
     }
     const postListOutput = yield query_repository_1.dataQueryRepository.getSeveralPostsById(blogId, sanitizedQuery);
     res.status(http_statuses_1.HttpStatus.Ok).send(postListOutput);
@@ -65,7 +65,7 @@ const createNewBlogPost = (req, res) => __awaiter(void 0, void 0, void 0, functi
             return;
         }
     }
-    res.status(http_statuses_1.HttpStatus.InternalServerError).send('Unknown error while attempting to create new blog-post or couldn\'t return created blog-post from Query Database.');
+    res.status(http_statuses_1.HttpStatus.InternalServerError).send("Unknown error while attempting to create new blog-post or couldn't return created blog-post from Query Database.");
     return;
 });
 exports.createNewBlogPost = createNewBlogPost;

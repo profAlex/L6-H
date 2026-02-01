@@ -1,15 +1,17 @@
-import {Collection, Db, MongoClient} from "mongodb";
+import { Collection, Db, MongoClient } from "mongodb";
 import { BlogViewModel } from "../routers/router-types/blog-view-model";
-import {PostViewModel} from "../routers/router-types/post-view-model";
-import {UserCollectionStorageModel} from "../routers/router-types/user-storage-model";
+import { PostViewModel } from "../routers/router-types/post-view-model";
+import { UserCollectionStorageModel } from "../routers/router-types/user-storage-model";
+import { CommentViewModel } from "../routers/router-types/comment-view-model";
 
-const DB_NAME = 'bloggers_db';
-const BLOGGERS_COLLECTION_NAME = 'bloggers_collection';
-const POSTS_COLLECTION_NAME = 'posts_collection';
-const USERS_COLLECTION_NAME = 'users_collection';
+const DB_NAME = "bloggers_db";
+const BLOGGERS_COLLECTION_NAME = "bloggers_collection";
+const POSTS_COLLECTION_NAME = "posts_collection";
+const USERS_COLLECTION_NAME = "users_collection";
+const COMMENTS_COLLECTION_NAME = "comments_collection";
 
-const URI = "mongodb+srv://admin:admin@learningcluster.f1zm90x.mongodb.net/?retryWrites=true&w=majority&appName=LearningCluster";
-
+const URI =
+    "mongodb+srv://admin:admin@learningcluster.f1zm90x.mongodb.net/?retryWrites=true&w=majority&appName=LearningCluster";
 
 let db: Db | null = null;
 
@@ -17,7 +19,7 @@ export let client: MongoClient | null = null;
 export let bloggersCollection: Collection<BlogViewModel>;
 export let postsCollection: Collection<PostViewModel>;
 export let usersCollection: Collection<UserCollectionStorageModel>;
-
+export let commentsCollection: Collection<CommentViewModel>;
 
 export async function runDB() {
     client = new MongoClient(URI);
@@ -25,33 +27,35 @@ export async function runDB() {
 
     bloggersCollection = db.collection<BlogViewModel>(BLOGGERS_COLLECTION_NAME);
     postsCollection = db.collection<PostViewModel>(POSTS_COLLECTION_NAME);
-    usersCollection = db.collection<UserCollectionStorageModel>(USERS_COLLECTION_NAME);
+    usersCollection = db.collection<UserCollectionStorageModel>(
+        USERS_COLLECTION_NAME,
+    );
+    commentsCollection = db.collection<CommentViewModel>(
+        COMMENTS_COLLECTION_NAME,
+    );
 
     try {
         await client.connect();
-        await db.command({ping: 1});
+        await db.command({ ping: 1 });
         console.log(`🟢 Connected to DB ${DB_NAME}`);
-    }
-    catch (error) {
+    } catch (error) {
         await client.close();
         throw new Error(`Database not connected: ${error}`);
     }
 }
 
-export async function closeDB(){
+export async function closeDB() {
     try {
         if (client) {
             await client.close();
 
-            console.log('🛑 MongoDB connection closed');
+            console.log("🛑 MongoDB connection closed");
             client = null;
             db = null;
         }
-    }
-    catch (error) {
-        console.error('Error: ', error);
+    } catch (error) {
+        console.error("Error: ", error);
     }
 }
-
 
 export { db };

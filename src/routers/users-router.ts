@@ -1,21 +1,43 @@
-import {Router} from "express";
-import {inputPaginationValidatorForUsers} from "./validation-middleware/pagination-validators";
-import {UsersSortListEnum} from "./util-enums/fields-for-sorting";
-import {inputErrorManagementMiddleware} from "./validation-middleware/error-management-validation-middleware";
-import {superAdminGuardMiddleware} from "./validation-middleware/base64-auth-guard_middleware";
-import {createNewUser, deleteUser, getSeveralUsers} from "./router-handlers/user-router-description";
-import {userInputModelValidation} from "./validation-middleware/UserInputModel-validation-middleware";
-import {createIdValidator} from "./validation-middleware/id-verification-and-validation";
-import {IdParamName} from "./util-enums/id-names";
-import {CollectionNames} from "../db/collection-names";
+import { Router } from "express";
+import { inputPaginationValidatorForUsers } from "./validation-middleware/pagination-validators";
+import { UsersSortListEnum } from "./util-enums/fields-for-sorting";
+import { inputErrorManagementMiddleware } from "./validation-middleware/error-management-validation-middleware";
+import { superAdminGuardMiddleware } from "./validation-middleware/base64-auth-guard_middleware";
+import {
+    createNewUser,
+    deleteUser,
+    getSeveralUsers,
+} from "./router-handlers/user-router-description";
+import { userInputModelValidation } from "./validation-middleware/UserInputModel-validation-middleware";
+import { createIdValidator } from "./validation-middleware/id-verification-and-validation";
+import { IdParamName } from "./util-enums/id-names";
+import { CollectionNames } from "../db/collection-names";
 
 export const usersRouter = Router();
 
-const validateBlogIdForGeneralCRUDEndpoints = createIdValidator({
-    paramKey: IdParamName.Id,
-    collectionName: CollectionNames.Users,
-});
+const validateBlogIdForGeneralCRUDEndpoints = createIdValidator(
+    IdParamName.PostId,
+    CollectionNames.Users,
+);
 
-usersRouter.get('/', superAdminGuardMiddleware, inputPaginationValidatorForUsers(UsersSortListEnum), inputErrorManagementMiddleware, getSeveralUsers)
-usersRouter.post('/', superAdminGuardMiddleware, userInputModelValidation, inputErrorManagementMiddleware, createNewUser);
-usersRouter.delete('/:id', superAdminGuardMiddleware, validateBlogIdForGeneralCRUDEndpoints, inputErrorManagementMiddleware, deleteUser);
+usersRouter.get(
+    "/",
+    superAdminGuardMiddleware,
+    inputPaginationValidatorForUsers(UsersSortListEnum),
+    inputErrorManagementMiddleware,
+    getSeveralUsers,
+);
+usersRouter.post(
+    "/",
+    superAdminGuardMiddleware,
+    userInputModelValidation,
+    inputErrorManagementMiddleware,
+    createNewUser,
+);
+usersRouter.delete(
+    "/:id",
+    superAdminGuardMiddleware,
+    validateBlogIdForGeneralCRUDEndpoints,
+    inputErrorManagementMiddleware,
+    deleteUser,
+);

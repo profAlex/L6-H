@@ -7,37 +7,18 @@ import {
     usersCollection,
 } from "../../db/mongo.db";
 
-// Тип запроса с параметром ID и опциональным query
-// такой смешанный тип необходим для того чтобы можно было пользоваться одной и той же функцией
-// createIdValidator для всех случаев цепочки миодлвэров и контроллеров, у которых в сигнатурах передаваемых
-// аргументов будут несколько уточняться параметры Request, Response
-type IdValidatorRequest<ParamKey extends string, Query = any> = Request<
-    { [K in ParamKey]: string },
-    any,
-    any,
-    Query
->;
-
-// Конфигурация валидатора — теперь включает имя коллекции в db
-type IdValidatorConfig<ParamKey extends string> = {
-    paramKey: ParamKey;
-    collectionName: string;
-};
-
-export function createIdValidator<ParamKey extends string, Query = any>(
-    config: IdValidatorConfig<ParamKey>,
+export function createIdValidator(
+    paramKey: string, // например, "postId"
+    collectionName: string, // например, "postsCollection"
 ) {
     return async (
-        req: IdValidatorRequest<ParamKey, Query>,
+        req: Request, // используем стандартный Request из Express
         res: Response,
         next: NextFunction,
     ) => {
-        // req.params — это объект, содержащий параметры URL из маршрута Express
-        // Например, для маршрута /users/:blogId параметр id будет доступен как req.params.blogId
-        const sentId = req.params[config.paramKey];
+        const sentId = req.params[paramKey]; // динамический доступ
 
-        // Передаём db из конфигурации в validateId
-        if (await validateId(sentId, config.collectionName, res)) {
+        if (await validateId(sentId, collectionName, res)) {
             next();
         }
     };

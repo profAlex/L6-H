@@ -1,4 +1,4 @@
 export enum IdParamName {
-    Id = 'id',
-    BlogId = 'blogId',
+    PostId = "postId",
+    BlogId = "blogId",
 }

@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.createNewUser = exports.getSeveralUsers = void 0;
 const express_validator_1 = require("express-validator");
 const query_repository_1 = require("../../repository-layers/query-repository-layer/query-repository");
-const http_statuses_1 = require("../util-enums/http-statuses");
+const http_statuses_1 = require("../../common/http-statuses/http-statuses");
 const users_service_1 = require("../../service-layer(BLL)/users-service");
 const custom_error_class_1 = require("../../repository-layers/utility/custom-error-class");
 const getSeveralUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sanitizedQuery = (0, express_validator_1.matchedData)(req, {
-        locations: ['query'],
+        locations: ["query"],
         includeOptionals: true,
     }); //утилита для извечения трансформированных значений после валидатара
     //в req.query остаются сырые квери параметры (строки)
@@ -34,16 +34,20 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         if (error instanceof custom_error_class_1.CustomError) {
             const errorData = error.metaData.errorMessage;
-            if (errorData.field === 'isUniqueEmail') {
+            if (errorData.field === "isUniqueEmail") {
                 console.error(`In field: ${errorData.field} - ${errorData.message}`);
                 res.status(http_statuses_1.HttpStatus.BadRequest).json({
-                    errorsMessages: [{ field: 'email', message: 'email should be unique' }]
+                    errorsMessages: [
+                        { field: "email", message: "email should be unique" },
+                    ],
                 });
             }
             else {
                 console.error(`In field: ${errorData.field} - ${errorData.message}`);
                 res.status(http_statuses_1.HttpStatus.BadRequest).json({
-                    errorsMessages: [{ field: 'login', message: 'login should be unique' }]
+                    errorsMessages: [
+                        { field: "login", message: "login should be unique" },
+                    ],
                 });
             }
         }
@@ -60,7 +64,7 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
     }
-    res.status(http_statuses_1.HttpStatus.InternalServerError).send('Unknown error while attempting to create new user or couldn\'t return created user from Query Database.');
+    res.status(http_statuses_1.HttpStatus.InternalServerError).send("Unknown error while attempting to create new user or couldn't return created user from Query Database.");
     return;
 });
 exports.createNewUser = createNewUser;

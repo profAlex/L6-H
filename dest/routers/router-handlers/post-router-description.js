@@ -9,14 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePost = exports.updatePost = exports.findSinglePost = exports.createNewPost = exports.getSeveralPosts = void 0;
-const http_statuses_1 = require("../util-enums/http-statuses");
+exports.createNewComment = exports.deletePost = exports.updatePost = exports.findSinglePost = exports.createNewPost = exports.getSeveralPosts = void 0;
+const http_statuses_1 = require("../../common/http-statuses/http-statuses");
 const posts_service_1 = require("../../service-layer(BLL)/posts-service");
 const express_validator_1 = require("express-validator");
 const query_repository_1 = require("../../repository-layers/query-repository-layer/query-repository");
+const id_names_1 = require("../util-enums/id-names");
 const getSeveralPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sanitizedQuery = (0, express_validator_1.matchedData)(req, {
-        locations: ['query'],
+        locations: ["query"],
         includeOptionals: true,
     }); //утилита для извечения трансформированных значений после валидатара
     //в req.query остаются сырые квери параметры (строки)
@@ -35,7 +36,7 @@ const createNewPost = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return;
         }
     }
-    res.status(http_statuses_1.HttpStatus.InternalServerError).send('Unknown error while attempting to create new post or couldn\'t return created post from Query Database.');
+    res.status(http_statuses_1.HttpStatus.InternalServerError).send("Unknown error while attempting to create new post or couldn't return created post from Query Database.");
     return;
 });
 exports.createNewPost = createNewPost;
@@ -63,3 +64,10 @@ const deletePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.sendStatus(http_statuses_1.HttpStatus.NoContent);
 });
 exports.deletePost = deletePost;
+const createNewComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+exports.createNewComment = createNewComment;
+// req: RequestWithParamsAndBodyAndUserId<
+//     IdParamName.PostId,
+//     CommentInputModel,
+//     UserIdType
+// >,
