@@ -24,7 +24,7 @@ export function createIdValidator(
     };
 }
 
-// функция validateId принимает db как параметр
+// функция validateId непосредствено занимается проверкой наличия Id в соответствующей коллекции
 async function validateId(
     sentId: string | undefined,
     collectionName: string,

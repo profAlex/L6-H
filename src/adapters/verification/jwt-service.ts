@@ -3,10 +3,10 @@ import { envConfig } from "../../config";
 import { JwtPayloadType } from "./payload-type";
 import { token } from "./token-type";
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
-import { Result } from "../../common/result-type/result-type";
+import { CustomResult } from "../../common/result-type/result-type";
 
 export const jwtService = {
-    async createToken(payload: JwtPayloadType): Promise<Result<token>> {
+    async createToken(payload: JwtPayloadType): Promise<CustomResult<token>> {
         if (!payload.userId) {
             console.error(
                 "Failed attempt to check credentials login or password",
@@ -23,7 +23,7 @@ export const jwtService = {
                         message: "userId is empty",
                     },
                 ],
-            } as Result<token>;
+            } as CustomResult<token>;
         }
 
         try {
@@ -50,7 +50,7 @@ export const jwtService = {
                             "Unknown error while attempting to sign payload",
                     },
                 ],
-            } as Result<token>;
+            } as CustomResult<token>;
         }
     },
 

@@ -11,8 +11,8 @@ import { PostViewModel } from "../../routers/router-types/post-view-model";
 import { PaginatedPostViewModel } from "../../routers/router-types/post-paginated-view-model";
 import { BlogViewModel } from "../../routers/router-types/blog-view-model";
 import {
-    bloggerCollectionStorageModel,
-    postCollectionStorageModel,
+    BloggerCollectionStorageModel,
+    PostCollectionStorageModel,
 } from "../command-repository-layer/command-repository";
 import { mapSingleBloggerCollectionToViewModel } from "../mappers/map-to-BlogViewModel";
 import { mapSinglePostCollectionToViewModel } from "../mappers/map-to-PostViewModel";
@@ -29,13 +29,13 @@ import { mapSingleUserCollectionToMeViewModel } from "../mappers/map-to-UserMeVi
 
 async function findBlogByPrimaryKey(
     id: ObjectId,
-): Promise<bloggerCollectionStorageModel | null> {
+): Promise<BloggerCollectionStorageModel | null> {
     return bloggersCollection.findOne({ _id: id });
 }
 
 async function findPostByPrimaryKey(
     id: ObjectId,
-): Promise<postCollectionStorageModel | null> {
+): Promise<PostCollectionStorageModel | null> {
     return postsCollection.findOne({ _id: id });
 }
 
@@ -170,7 +170,7 @@ export const dataQueryRepository = {
 
     async findSingleBlog(blogId: string): Promise<BlogViewModel | undefined> {
         if (ObjectId.isValid(blogId)) {
-            const blogger: bloggerCollectionStorageModel | null =
+            const blogger: BloggerCollectionStorageModel | null =
                 await findBlogByPrimaryKey(new ObjectId(blogId));
 
             if (blogger) {
@@ -227,7 +227,7 @@ export const dataQueryRepository = {
 
     async findSinglePost(postId: string): Promise<PostViewModel | undefined> {
         if (ObjectId.isValid(postId)) {
-            const post: postCollectionStorageModel | null =
+            const post: PostCollectionStorageModel | null =
                 await findPostByPrimaryKey(new ObjectId(postId));
 
             if (post) {

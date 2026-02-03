@@ -17,13 +17,11 @@ import { createIdValidator } from "./validation-middleware/id-verification-and-v
 import { inputPaginationValidatorForPosts } from "./validation-middleware/pagination-validators";
 import { PostsSortListEnum } from "./util-enums/fields-for-sorting";
 import { tokenGuardVerification } from "./guard-middleware/token-guard";
-import { CommentInputModel } from "./router-types/comment-input-model";
-import { RequestWithParamsAndBodyAndUserId } from "./request-types/request-types";
-import { UserIdType } from "./router-types/user-id-type";
+import { commentInputModelValidation } from "./validation-middleware/comment-input-model-validation";
 
 export const postsRouter = Router();
 
-const validatePostId = createIdValidator(
+const validateParameterPostId = createIdValidator(
     IdParamName.PostId,
     CollectionNames.Posts,
 );
@@ -32,7 +30,8 @@ const validatePostId = createIdValidator(
 postsRouter.post(
     "/:postId/comments",
     tokenGuardVerification,
-    validatePostId,
+    validateParameterPostId,
+    commentInputModelValidation,
     inputErrorManagementMiddleware,
     createNewComment,
 );
@@ -56,17 +55,17 @@ postsRouter.post(
 
 // Return post by post-id
 postsRouter.get(
-    "/:id", // здесь было просто id
-    validatePostId,
+    "/:postId", // здесь было просто id
+    validateParameterPostId,
     inputErrorManagementMiddleware,
     findSinglePost,
 );
 
 // auth guarded, Update existing post by post-id with InputModel
 postsRouter.put(
-    "/:id", // здесь было просто id
+    "/:postId", // здесь было просто id
     superAdminGuardMiddleware,
-    validatePostId,
+    validateParameterPostId,
     /*inputErrorManagementMiddleware,*/ postInputModelValidation,
     inputErrorManagementMiddleware,
     updatePost,
@@ -74,9 +73,9 @@ postsRouter.put(
 
 // auth guarded, Delete post specified by post-id
 postsRouter.delete(
-    "/:id", // здесь было просто id
+    "/:postId", // здесь было просто id
     superAdminGuardMiddleware,
-    validatePostId,
+    validateParameterPostId,
     inputErrorManagementMiddleware,
     deletePost,
 );

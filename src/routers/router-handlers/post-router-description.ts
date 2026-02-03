@@ -83,10 +83,121 @@ export const createNewComment = async (
         UserIdType
     >,
     res: Response,
-) => {};
+) => {
+    // проверка параметра URL: postId
+    const postId = req.params[IdParamName.PostId];
+    if (!postId) {
+        console.error({
+            message:
+                "Missing required parameter: postId inside createNewComment handler",
+            field: "'if (!postId)' check failed",
+        });
 
-// req: RequestWithParamsAndBodyAndUserId<
-//     IdParamName.PostId,
-//     CommentInputModel,
-//     UserIdType
-// >,
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    // проверка, что postId — валидная строка (не пустая)
+    if (typeof postId !== "string" || postId.trim().length === 0) {
+        console.error({
+            message:
+                "Required parameter has incorrect format: 'postId' inside createNewComment handler",
+            field: "'if (typeof postId !== \"string\" || postId.trim().length === 0)' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    if (!req.body) {
+        console.error({
+            message:
+                "Required parameter is missing: 'req.body' inside createNewComment handler",
+            field: "'if (!req.body) ' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    // проверка тела запроса: content
+    const { content } = req.body;
+    if (!content) {
+        console.error({
+            message:
+                "Required parameter is missing: 'content' inside createNewComment handler",
+            field: "'if (!content) ' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    // проверка, что content — валидная строка (не пустая)
+    if (typeof content !== "string" || content.trim().length === 0) {
+        console.error({
+            message:
+                "Required parameter has incorrect format: 'content' inside createNewComment handler",
+            field: "'if (typeof content !== \"string\" || content.trim().length === 0)' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    // проверка наличия userId в структуре req
+    if (!req.user || !req.user.userId) {
+        console.error({
+            message:
+                "Required parameter is missing: 'req.user or req.user.userId' inside createNewComment handler",
+            field: "'if (!req.user || !req.user.userId)' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    const userId = req.user.userId;
+    if (typeof userId !== "string" || userId.trim().length === 0) {
+        console.error({
+            message:
+                "Required parameter has incorrect format: 'req.user.userId' inside createNewComment handler",
+            field: "'if (typeof userId !== \"string\" || userId.trim().length === 0)' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    const newCommentResult = await postsService.createNewComment(
+        postId,
+        content,
+        userId,
+    );
+
+    if (!newCommentResult.data) {
+        console.error(
+            "Error description: ",
+            newCommentResult?.statusDescription,
+            JSON.stringify(newCommentResult.errorsMessages),
+        );
+
+        return res.status(newCommentResult.statusCode).send("Error");
+    }
+
+    return res.status(newCommentResult.statusCode).send(newCommentResult.data);
+};

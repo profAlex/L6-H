@@ -3,6 +3,7 @@ import { PostViewModel } from "../../routers/router-types/post-view-model";
 import { PostInputModel } from "../../routers/router-types/post-input-model";
 import {
     bloggersCollection,
+    commentsCollection,
     postsCollection,
     usersCollection,
 } from "../../db/mongo.db";
@@ -13,8 +14,13 @@ import { UserInputModel } from "../../routers/router-types/user-input-model";
 import { UserViewModel } from "../../routers/router-types/user-view-model";
 import { bcryptService } from "../../adapters/authentication/bcrypt-service";
 import { UserCollectionStorageModel } from "../../routers/router-types/user-storage-model";
+import { CommentViewModel } from "../../routers/router-types/comment-view-model";
+import { CustomResult } from "../../common/result-type/result-type";
+import { token } from "../../adapters/verification/token-type";
+import { HttpStatus } from "../../common/http-statuses/http-statuses";
+import { CommentStorageModel } from "../../routers/router-types/comment-storage-model";
 
-export type bloggerCollectionStorageModel = {
+export type BloggerCollectionStorageModel = {
     _id: ObjectId;
     id: string;
     name: string;
@@ -24,7 +30,7 @@ export type bloggerCollectionStorageModel = {
     isMembership: boolean;
 };
 
-export type postCollectionStorageModel = {
+export type PostCollectionStorageModel = {
     _id: ObjectId;
     id: string;
     title: string;
@@ -35,193 +41,28 @@ export type postCollectionStorageModel = {
     createdAt: Date;
 };
 
-// const __nonDisclosableDatabase = {
-//     bloggerRepository: [{
-//         bloggerInfo:
-//             {
-//                 id: "001",
-//                 name: "blogger_001",
-//                 description: "takoy sebe blogger...",
-//                 websiteUrl: "https://takoy.blogger.com",
-//             },
-//         bloggerPosts:
-//             [{
-//                 id: "001_001",
-//                 title: "post blog 001",
-//                 shortDescription: "post ni o 4em",
-//                 content: "Eto testovoe napolnenie posta 001_001",
-//                 blogId: "001",
-//                 blogName: "blogger_001"
-//             },
-//             {
-//                 id: "001_002",
-//                 title: "post blog 002",
-//                 shortDescription: "post ni o 4em",
-//                 content: "Eto testovoe napolnenie posta 001_002",
-//                 blogId: "001",
-//                 blogName: "blogger_001"
-//             }
-//         ]},
-//         {
-//             bloggerInfo:
-//             {
-//                 id: "002",
-//                 name: "blogger_002",
-//                 description: "a eto klassnii blogger!",
-//                 wbesiteUrl: "https://klassnii.blogger.com"
-//             },
-//             bloggerPosts:
-//             [{
-//                 id: "002_001",
-//                 title: "post blog 001",
-//                 shortDescription: "horowii post",
-//                 content: "Eto testovoe napolnenie posta 002_001",
-//                 blogId: "002",
-//                 blogName: "blogger_002"
-//             },
-//             {
-//                 postId: "002_002",
-//                 postTitle: "post blog 002",
-//                 postShortDescription: "horowii post",
-//                 postContent: "Eto testovoe napolnenie posta 002_002",
-//                 blogId: "002",
-//                 blogName: "blogger_002"
-//             }]
-//         }
-//     ]
-
-// const bloggerInfo: bloggerCollectionStorageModel[] = [
-//     {
-//         id: "001",
-//         name: "blogger_001",
-//         description: "takoy sebe blogger...",
-//         websiteUrl: "https://takoy.blogger.com",
-//         createdAt: new Date,
-//         isMembership: false
-//     },
-//     {
-//         id: "002",
-//         name: "blogger_002",
-//         description: "a eto klassnii blogger!",
-//         websiteUrl: "https://klassnii.blogger.com",
-//         createdAt: new Date,
-//         isMembership: false,
-//     }
-// ];
-//
-//
-// const bloggerPosts: postCollectionStorageModel[] = [
-//     {
-//         id: "001_001",
-//         title: "post blog 001",
-//         shortDescription: "post ni o 4em",
-//         content: "Eto testovoe napolnenie posta 001_001",
-//         blogId: "001",
-//         blogName: "blogger_001",
-//         createdAt: new Date()
-//     },
-//     {
-//         id: "001_002",
-//         title: "post blog 002",
-//         shortDescription: "post ni o 4em",
-//         content: "Eto testovoe napolnenie posta 001_002",
-//         blogId: "001",
-//         blogName: "blogger_001",
-//         createdAt: new Date()
-//     },
-//     {
-//         id: "002_001",
-//         title: "post blog 001",
-//         shortDescription: "horowii post",
-//         content: "Eto testovoe napolnenie posta 002_001",
-//         blogId: "002",
-//         blogName: "blogger_002",
-//         createdAt: new Date()
-//     },
-//     {
-//         id: "002_002",
-//         title: "post blog 002",
-//         shortDescription: "horowii post",
-//         content: "Eto testovoe napolnenie posta 002_002",
-//         blogId: "002",
-//         blogName: "blogger_002",
-//         createdAt: new Date()
-//     }
-// ];
-
 async function findBlogByPrimaryKey(
     id: ObjectId,
-): Promise<bloggerCollectionStorageModel | null> {
+): Promise<BloggerCollectionStorageModel | null> {
     return bloggersCollection.findOne({ _id: id });
 }
 
 async function findPostByPrimaryKey(
     id: ObjectId,
-): Promise<postCollectionStorageModel | null> {
+): Promise<PostCollectionStorageModel | null> {
     return postsCollection.findOne({ _id: id });
+}
+
+async function findUserByPrimaryKey(
+    id: ObjectId,
+): Promise<UserCollectionStorageModel | null> {
+    return usersCollection.findOne({ _id: id });
 }
 
 export const dataCommandRepository = {
     // *****************************
     // методы для управления блогами
     // *****************************
-    // перенесли в dataQueryRepository
-    // async getSeveralBlogs(sentInputGetBlogsQuery: InputGetBlogsQuery) : Promise<{items: WithId<BlogViewModel>[]; totalCount: number}> {
-    //     const {
-    //         searchNameTerm,
-    //         sortBy,
-    //         sortDirection,
-    //         pageNumber,
-    //         pageSize,
-    //     } = sentInputGetBlogsQuery;
-    //
-    //     let filter :any = {};
-    //     const skip = (pageNumber - 1) * pageSize;
-    //
-    //     try{
-    //
-    //         if (searchNameTerm && searchNameTerm.trim() !== '') {
-    //             // Экранируем спецсимволы для безопасного $regex
-    //             const escapedTerm = searchNameTerm
-    //                 .trim()
-    //                 .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    //
-    //             filter = {
-    //                 $or: [
-    //                     { name: { $regex: escapedTerm, $options: 'i' } },
-    //                     { description: { $regex: escapedTerm, $options: 'i' } },
-    //                     { websiteUrl: { $regex: escapedTerm, $options: 'i' } },
-    //                 ],
-    //             };
-    //         }
-    //     }
-    //     catch(err){
-    //         console.error("ERROR: ", err)
-    //     }
-    //
-    //     if(!sortBy) {
-    //         console.error("ERROR: sortBy is null or undefined inside dataRepository.getSeveralBlogs");
-    //         throw new Error();
-    //     }
-    //
-    //     const items = await bloggersCollection
-    //         .find(filter)
-    //
-    //         // "asc" (по возрастанию), то используется 1
-    //         // "desc" — то -1 для сортировки по убыванию. - по алфавиту от Я-А, Z-A
-    //         .sort({[sortBy]: sortDirection})
-    //
-    //         // пропускаем определённое количество документов перед тем, как вернуть нужный набор данных.
-    //         .skip(skip)
-    //
-    //         // ограничивает количество возвращаемых документов до значения pageSize
-    //         .limit(pageSize)
-    //         .toArray();
-    //
-    //     const totalCount = await bloggersCollection.countDocuments(filter);
-    //
-    //     return {items, totalCount};
-    // },
 
     async createNewBlog(newBlog: BlogInputModel): Promise<string | undefined> {
         try {
@@ -232,7 +73,7 @@ export const dataCommandRepository = {
                 ...newBlog,
                 createdAt: new Date(),
                 isMembership: false,
-            } as bloggerCollectionStorageModel;
+            } as BloggerCollectionStorageModel;
 
             const result = await bloggersCollection.insertOne(newBlogEntry);
 
@@ -245,7 +86,6 @@ export const dataCommandRepository = {
                 });
             }
 
-            // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
             return result.insertedId.toString();
         } catch (error) {
             if (error instanceof CustomError) {
@@ -269,83 +109,10 @@ export const dataCommandRepository = {
         }
     },
 
-    // async getSeveralPostsById(sentBlogId:string, sentSanitizedQuery: InputGetBlogPostsByIdQuery) : Promise<{items: WithId<PostViewModel>[]; totalCount: number}> {
-    //     const {
-    //         sortBy,
-    //         sortDirection,
-    //         pageNumber,
-    //         pageSize,
-    //     } = sentSanitizedQuery;
-    //
-    //     const skip = (pageNumber - 1) * pageSize;
-    //
-    //     if(!sortBy) {
-    //         console.error("ERROR: sortBy is null or undefined inside dataRepository.getSeveralPostsById");
-    //         throw new Error();
-    //     }
-    //
-    //     const items = await postsCollection
-    //         .find({blogId: sentBlogId})
-    //
-    //         // "asc" (по возрастанию), то используется 1
-    //         // "desc" — то -1 для сортировки по убыванию. - по алфавиту от Я-А, Z-A
-    //         .sort({[sortBy]: sortDirection})
-    //
-    //         // пропускаем определённое количество док. перед тем, как вернуть нужный набор данных.
-    //         .skip(skip)
-    //
-    //         // ограничивает количество возвращаемых документов до значения pageSize
-    //         .limit(pageSize)
-    //         .toArray();
-    //
-    //     const totalCount = await postsCollection.countDocuments({blogId: sentBlogId});
-    //
-    //     return {items, totalCount};
-    // },
-    //
-
-    // async findSingleBlog(blogId: string): Promise<BlogViewModel | undefined> {
-    //
-    //     if (ObjectId.isValid(blogId)) {
-    //
-    //         const blogger: bloggerCollectionStorageModel | null = await findBlogByPrimaryKey(new ObjectId(blogId));
-    //
-    //         if(blogger)
-    //         {
-    //             // const foundBlogger = {
-    //             //     id: blogger.bloggerInfo.id,
-    //             //     name: blogger.bloggerInfo.name,
-    //             //     description: blogger.bloggerInfo.description,
-    //             //     websiteUrl: blogger.bloggerInfo.websiteUrl
-    //             // }
-    //
-    //             // console.log("ID inside finding function:", foundBlogger.id);
-    //
-    //             return mapSingleBloggerCollectionToViewModel(blogger);
-    //         }
-    //     }
-    //
-    //     return undefined;
-    // },
-
     async updateBlog(
         blogId: string,
         newData: BlogInputModel,
     ): Promise<null | undefined> {
-        // if (ObjectId.isValid(blogId)) {
-        //
-        //     const idToCheck = new ObjectId(blogId);
-        //     const res = await bloggersCollection.updateOne(
-        //         {_id: idToCheck},
-        //         {$set: {...newData}}
-        //     );
-        //
-        //     if(res.matchedCount === 1)
-        //     {
-        //         return null;
-        //     }
-        // }
-
         try {
             if (ObjectId.isValid(blogId)) {
                 const idToCheck = new ObjectId(blogId);
@@ -399,19 +166,6 @@ export const dataCommandRepository = {
     },
 
     async deleteBlog(blogId: string): Promise<null | undefined> {
-        // if (ObjectId.isValid(blogId)) {
-        //     const idToCheck = new ObjectId(blogId);
-        //     const res = await bloggersCollection.deleteOne({_id: idToCheck});
-        //
-        //
-        //
-        //     if(res.deletedCount === 1)
-        //     {
-        //         await postsCollection.deleteMany({ blogId: blogId }); // Надо связанные посты удалять?????????????????
-        //         return null;
-        //     }
-        // }
-
         try {
             if (ObjectId.isValid(blogId)) {
                 const idToCheck = new ObjectId(blogId);
@@ -432,9 +186,6 @@ export const dataCommandRepository = {
                     return null;
                 }
             } else {
-                // throw new CustomError({
-                //     errorMessage: { field: 'ObjectId.isValid(blogId)', message: 'invalid blog ID' }
-                // });
                 return undefined;
             }
         } catch (error) {
@@ -465,14 +216,10 @@ export const dataCommandRepository = {
     // методы для управления постами
     // *****************************
     async getAllPosts(): Promise<PostViewModel[] | []> {
-        // return __nonDisclosableDatabase.bloggerRepository.flatMap((element: bloggerRawData):PostViewModel[] | [] => (element.bloggerPosts ?? []));
-
-        const tempContainer: postCollectionStorageModel[] | [] =
+        const tempContainer: PostCollectionStorageModel[] | [] =
             await postsCollection.find({}).toArray();
 
-        // console.log('LOOK HERE ---->', tempContainer.length);
-
-        return tempContainer.map((value: postCollectionStorageModel) => ({
+        return tempContainer.map((value: PostCollectionStorageModel) => ({
             id: value._id.toString(),
             title: value.title,
             shortDescription: value.shortDescription,
@@ -507,7 +254,7 @@ export const dataCommandRepository = {
                         ...newPost,
                         blogName: relatedBlogger.name,
                         createdAt: new Date(),
-                    } as postCollectionStorageModel;
+                    } as PostCollectionStorageModel;
 
                     const result =
                         await postsCollection.insertOne(newPostEntry);
@@ -522,7 +269,6 @@ export const dataCommandRepository = {
                     }
 
                     return result.insertedId.toString();
-                    // return mapSinglePostCollectionToViewModel(newPostEntry);
                 } else {
                     throw new CustomError({
                         errorMessage: {
@@ -582,7 +328,7 @@ export const dataCommandRepository = {
                         blogId: sentBlogId,
                         blogName: relatedBlogger.name,
                         createdAt: new Date(),
-                    } as postCollectionStorageModel;
+                    } as PostCollectionStorageModel;
 
                     const result =
                         await postsCollection.insertOne(newPostEntry);
@@ -679,16 +425,6 @@ export const dataCommandRepository = {
     },
 
     async deletePost(postId: string): Promise<null | undefined> {
-        // if (ObjectId.isValid(postId)) {
-        //     const idToCheck = new ObjectId(postId);
-        //     const res = await postsCollection.deleteOne({_id: idToCheck});
-        //
-        //     if(res.deletedCount === 1)
-        //     {
-        //         return null;
-        //     }
-        // }
-
         try {
             if (ObjectId.isValid(postId)) {
                 const idToCheck = new ObjectId(postId);
@@ -760,8 +496,6 @@ export const dataCommandRepository = {
                 createdAt: new Date(),
             } as UserCollectionStorageModel;
 
-            // console.log(JSON.stringify(newUserEntry));
-
             const result = await usersCollection.insertOne(newUserEntry);
 
             if (!result.acknowledged) {
@@ -772,8 +506,6 @@ export const dataCommandRepository = {
                     },
                 });
             }
-            // console.log(JSON.stringify(newUserEntry));
-            // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
             return result.insertedId.toString();
         } catch (error) {
             if (error instanceof CustomError) {
@@ -815,10 +547,6 @@ export const dataCommandRepository = {
                     return null;
                 }
             } else {
-                // throw new CustomError({
-                //     errorMessage: { field: 'ObjectId.isValid(userId)', message: 'invalid user ID' }
-                // });
-
                 return undefined;
             }
         } catch (error) {
@@ -832,7 +560,6 @@ export const dataCommandRepository = {
                     console.error(`Unknown error: ${JSON.stringify(error)}`);
                 }
 
-                // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                 return undefined;
             } else {
                 console.error(
@@ -842,6 +569,111 @@ export const dataCommandRepository = {
                     "Placeholder for an error to be rethrown and dealt with in the future in deleteUser method of dataCommandRepository",
                 );
             }
+        }
+    },
+
+    // *****************************
+    // методы для управления комментариями
+    // *****************************
+    async createNewComment(
+        postId: string,
+        content: string,
+        userId: string,
+    ): Promise<CustomResult<CommentViewModel>> {
+        try {
+            if (ObjectId.isValid(userId) && ObjectId.isValid(postId)) {
+                // проверяем существует ли такой юзер и возвращаем его логин
+                // ищем существует ли такой пост
+                // создаем временный объект, куда записываем postId, userId, создаем и записываем id нового объекта
+                const user = await findUserByPrimaryKey(new ObjectId(userId));
+
+                if (!user) {
+                    return {
+                        data: null,
+                        statusCode: HttpStatus.InternalServerError,
+                        statusDescription:
+                            "User is not found, possibly because its token is valid but user-record was already deleted or due to an database error",
+                        errorsMessages: [
+                            {
+                                field: "dataCommandRepository.createNewComment -> findUserByPrimaryKey(new ObjectId(userId))", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: "Couldn't find User record", // ошибкам надо присваивать кода, чтобы пользователи могли сообщать номер ошибки в техподдержку
+                            },
+                        ],
+                    } as CustomResult<CommentViewModel>;
+                }
+                const userLogin = user.login;
+                // тут по-идее также проверка на соответствие userLogin требованиям?
+
+                const tempId = new ObjectId();
+                const newCommentEntry = {
+                    _id: tempId,
+                    id: tempId.toString(),
+                    relatedPostId: postId,
+                    content: content,
+                    commentatorInfo: { userId: userId, userLogin: userLogin },
+                    createdAt: new Date(),
+                } as CommentStorageModel;
+
+                const result =
+                    await commentsCollection.insertOne(newCommentEntry);
+
+                if (!result.acknowledged) {
+                    return {
+                        data: null,
+                        statusCode: HttpStatus.InternalServerError,
+                        statusDescription: "Error while inserting new comment",
+                        errorsMessages: [
+                            {
+                                field: "dataCommandRepository.createNewComment -> commentsCollection.insertOne(newCommentEntry)", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: "Error while inserting new comment",
+                            },
+                        ],
+                    } as CustomResult<CommentViewModel>;
+                }
+
+                return {
+                    data: {
+                        id: newCommentEntry.id,
+                        content: newCommentEntry.content,
+                        commentatorInfo: newCommentEntry.commentatorInfo,
+                        createdAt: newCommentEntry.createdAt,
+                    } as CommentViewModel,
+                    statusCode: HttpStatus.Created,
+                    errorsMessages: [
+                        {
+                            field: null,
+                            message: null,
+                        },
+                    ],
+                } as CustomResult<CommentViewModel>;
+            } else {
+                return {
+                    data: null,
+                    statusCode: HttpStatus.InternalServerError,
+                    statusDescription:
+                        "User ID or Post ID dont look like valid mongo ID. Need to check input data and corresponding user and post records.",
+                    errorsMessages: [
+                        {
+                            field: "dataCommandRepository.createNewComment -> if (ObjectId.isValid(userId) && ObjectId.isValid(postId))", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: "User ID or Post ID have invalid format",
+                        },
+                    ],
+                } as CustomResult<CommentViewModel>;
+            }
+        } catch (error) {
+            console.error(`Unknown error: ${JSON.stringify(error)}`);
+            // throw new Error("Placeholder for an error to be rethrown and dealt with in the future in createNewUser method of dataCommandRepository");
+            return {
+                data: null,
+                statusCode: HttpStatus.InternalServerError,
+                statusDescription: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                errorsMessages: [
+                    {
+                        field: "dataCommandRepository.createNewComment", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                        message: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                    },
+                ],
+            } as CustomResult<CommentViewModel>;
         }
     },
 

@@ -1,7 +1,9 @@
-import {PostViewModel} from "../../routers/router-types/post-view-model";
-import {postCollectionStorageModel} from "../command-repository-layer/command-repository";
+import { PostViewModel } from "../../routers/router-types/post-view-model";
+import { PostCollectionStorageModel } from "../command-repository-layer/command-repository";
 
-export const mapSinglePostCollectionToViewModel = (postInContainer: postCollectionStorageModel) => {
+export const mapSinglePostCollectionToViewModel = (
+    postInContainer: PostCollectionStorageModel,
+) => {
     return {
         id: postInContainer._id.toString(),
         title: postInContainer.title,
@@ -9,6 +11,6 @@ export const mapSinglePostCollectionToViewModel = (postInContainer: postCollecti
         content: postInContainer.content,
         blogId: postInContainer.blogId,
         blogName: postInContainer.blogName,
-        createdAt: postInContainer.createdAt
+        createdAt: postInContainer.createdAt,
     } as PostViewModel;
 };

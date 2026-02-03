@@ -2,7 +2,7 @@ import { Collection, Db, MongoClient } from "mongodb";
 import { BlogViewModel } from "../routers/router-types/blog-view-model";
 import { PostViewModel } from "../routers/router-types/post-view-model";
 import { UserCollectionStorageModel } from "../routers/router-types/user-storage-model";
-import { CommentViewModel } from "../routers/router-types/comment-view-model";
+import { CommentStorageModel } from "../routers/router-types/comment-storage-model";
 
 const DB_NAME = "bloggers_db";
 const BLOGGERS_COLLECTION_NAME = "bloggers_collection";
@@ -19,7 +19,7 @@ export let client: MongoClient | null = null;
 export let bloggersCollection: Collection<BlogViewModel>;
 export let postsCollection: Collection<PostViewModel>;
 export let usersCollection: Collection<UserCollectionStorageModel>;
-export let commentsCollection: Collection<CommentViewModel>;
+export let commentsCollection: Collection<CommentStorageModel>;
 
 export async function runDB() {
     client = new MongoClient(URI);
@@ -30,7 +30,7 @@ export async function runDB() {
     usersCollection = db.collection<UserCollectionStorageModel>(
         USERS_COLLECTION_NAME,
     );
-    commentsCollection = db.collection<CommentViewModel>(
+    commentsCollection = db.collection<CommentStorageModel>(
         COMMENTS_COLLECTION_NAME,
     );
 

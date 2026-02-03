@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { LoginInputModel } from "../router-types/login-input-model";
 import { authService } from "../../service-layer(BLL)/auth-service";
-import { Result } from "../../common/result-type/result-type";
+import { CustomResult } from "../../common/result-type/result-type";
 import { token } from "../../adapters/verification/token-type";
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { RequestWithUserId } from "../request-types/request-types";
@@ -13,15 +13,20 @@ export const attemptToLogin = async (
     res: Response,
 ) => {
     const { loginOrEmail, password } = req.body;
-    const loginResult: Result<token> = await authService.loginUser(
+    const loginResult: CustomResult<token> = await authService.loginUser(
         loginOrEmail,
         password,
     );
 
-    if (!loginResult.data)
-        return res
-            .status(loginResult.statusCode)
-            .send(loginResult.errorsMessages);
+    if (!loginResult.data) {
+        console.error(
+            "Error description: ",
+            loginResult?.statusDescription,
+            JSON.stringify(loginResult.errorsMessages),
+        );
+
+        return res.status(loginResult.statusCode).send("Error");
+    }
 
     return res.status(HttpStatus.Ok).send(loginResult.data);
 };

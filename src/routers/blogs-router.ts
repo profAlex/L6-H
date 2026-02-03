@@ -34,38 +34,39 @@ const validateBlogId = createIdValidator(
     IdParamName.BlogId,
     CollectionNames.Blogs,
 );
-//
-// const validateBlogIdForBlogPostCreationEndpoint = createIdValidator(
-//     IdParamName.BlogId,
-//     CollectionNames.Blogs,
-// );
 
 const validatePostIdForGeneralCRUDEndpoints = createIdValidator(
     IdParamName.PostId,
     CollectionNames.Blogs,
 );
 
+// Returns blogs with paging
 blogsRouter.get(
     "/",
     inputPaginationValidatorForBlogs(BlogsSortListEnum),
     inputErrorManagementMiddleware,
     getSeveralBlogs,
-); // Returns blogs with paging
+);
+
+// auth guarded, Creates new blog
 blogsRouter.post(
     "/",
     superAdminGuardMiddleware,
     blogInputModelValidation,
     inputErrorManagementMiddleware,
     createNewBlog,
-); // auth guarded, Creates new blog
+);
 
+// Returns all posts for specified blog
 blogsRouter.get(
     "/:blogId/posts",
     validateBlogId,
     inputPaginationValidatorForPosts(PostsSortListEnum),
     inputErrorManagementMiddleware,
     getSeveralPostsFromBlog,
-); // Returns all posts for specified blog
+);
+
+// auth guarded, Creates new post for specific blog
 blogsRouter.post(
     "/:blogId/posts",
     superAdminGuardMiddleware,
@@ -73,14 +74,17 @@ blogsRouter.post(
     blogRoutesPostInputModelValidation,
     inputErrorManagementMiddleware,
     createNewBlogPost,
-); // auth guarded, Creates new post for specific blog
+);
 
+// Returns blog by id
 blogsRouter.get(
     "/:id",
     validatePostIdForGeneralCRUDEndpoints,
     inputErrorManagementMiddleware,
     findSingleBlog,
-); // Returns blog by id
+);
+
+// auth guarded, Update existing Blog by id with InputModel
 blogsRouter.put(
     "/:id",
     superAdminGuardMiddleware,
@@ -88,11 +92,13 @@ blogsRouter.put(
     blogInputModelValidation,
     inputErrorManagementMiddleware,
     updateBlog,
-); // auth guarded, Update existing Blog by id with InputModel
+);
+
+// auth guarded, Deletes blog specified by id
 blogsRouter.delete(
     "/:id",
     superAdminGuardMiddleware,
     validatePostIdForGeneralCRUDEndpoints,
     inputErrorManagementMiddleware,
     deleteBlog,
-); // auth guarded, Deletes blog specified by id
+);

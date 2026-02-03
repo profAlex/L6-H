@@ -1,7 +1,7 @@
 import { dataQueryRepository } from "../repository-layers/query-repository-layer/query-repository";
 import { bcryptService } from "../adapters/authentication/bcrypt-service";
 import { jwtService } from "../adapters/verification/jwt-service";
-import { Result } from "../common/result-type/result-type";
+import { CustomResult } from "../common/result-type/result-type";
 import { JwtPayloadType } from "../adapters/verification/payload-type";
 import { HttpStatus } from "../common/http-statuses/http-statuses";
 import { token } from "../adapters/verification/token-type";
@@ -10,7 +10,7 @@ export const authService = {
     async loginUser(
         loginOrEmail: string,
         password: string,
-    ): Promise<Result<token>> {
+    ): Promise<CustomResult<token>> {
         const user = await dataQueryRepository.findByLoginOrEmail(loginOrEmail);
 
         if (!user)
@@ -24,7 +24,7 @@ export const authService = {
                         message: "User does not exist",
                     },
                 ],
-            } as Result<token>;
+            } as CustomResult<token>;
 
         const isCorrectCredentials = await this.checkUserCredentials(
             password,
@@ -42,7 +42,7 @@ export const authService = {
                         message: "Wrong login or password",
                     },
                 ],
-            } as Result<token>;
+            } as CustomResult<token>;
         } else if (isCorrectCredentials === null) {
             return {
                 data: null,
@@ -56,7 +56,7 @@ export const authService = {
                             "Failed attempt to check credentials login or password",
                     },
                 ],
-            } as Result<token>;
+            } as CustomResult<token>;
         }
 
         const resultedToken = await jwtService.createToken({ userId: user.id });
