@@ -12,21 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postsService = void 0;
 const command_repository_1 = require("../repository-layers/command-repository-layer/command-repository");
 exports.postsService = {
-    // async getAllPosts(): Promise <PostViewModel[] | []> {
-    //     return await dataRepository.getAllPosts();
-    // },
-    // async getSeveralPosts(sentInputGetPostsQuery: InputGetPostsQuery): Promise<{items: WithId<PostViewModel>[]; totalCount: number}> {
-    //
-    //     return await dataCommandRepository.getSeveralPosts(sentInputGetPostsQuery);
-    // },
     createNewPost(newPost) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield command_repository_1.dataCommandRepository.createNewPost(newPost);
         });
     },
-    // async findSinglePost(postId: string): Promise<PostViewModel | undefined> {
-    //     return await dataCommandRepository.findSinglePost(postId);
-    // },
     updatePost(postId, newData) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield command_repository_1.dataCommandRepository.updatePost(postId, newData);
@@ -35,6 +25,11 @@ exports.postsService = {
     deletePost(postId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield command_repository_1.dataCommandRepository.deletePost(postId);
+        });
+    },
+    createNewComment(postId, content, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield command_repository_1.dataCommandRepository.createNewComment(postId, content, userId);
         });
     },
 };

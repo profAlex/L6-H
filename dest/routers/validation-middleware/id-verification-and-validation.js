@@ -23,7 +23,7 @@ collectionName) {
         }
     });
 }
-// функция validateId принимает db как параметр
+// функция validateId непосредствено занимается проверкой наличия Id в соответствующей коллекции
 function validateId(sentId, collectionName, res) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!sentId) {

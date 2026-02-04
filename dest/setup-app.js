@@ -11,6 +11,7 @@ const posts_router_1 = require("./routers/posts-router");
 const testing_router_1 = require("./routers/testing-router");
 const auth_router_1 = require("./routers/auth-router");
 const users_router_1 = require("./routers/users-router");
+const comments_router_1 = require("./routers/comments-router");
 const setupApp = (app) => {
     app.use(express_1.default.json());
     app.use(router_pathes_1.BLOGS_PATH, blogs_router_1.blogsRouter);
@@ -18,7 +19,8 @@ const setupApp = (app) => {
     app.use(router_pathes_1.TESTING_PATH, testing_router_1.testingRouter);
     app.use(router_pathes_1.AUTH_PATH, auth_router_1.authRouter);
     app.use(router_pathes_1.USERS_PATH, users_router_1.usersRouter);
-    app.get('/', (req, res) => {
+    app.use(router_pathes_1.COMMENTS_PATH, comments_router_1.commentsRouter);
+    app.get("/", (req, res) => {
         res.status(200).send("All good!");
     });
     return app;

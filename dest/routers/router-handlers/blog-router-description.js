@@ -47,7 +47,10 @@ const getSeveralPostsFromBlog = (req, res) => __awaiter(void 0, void 0, void 0, 
     //в req.query остаются сырые квери параметры (строки)
     const blogId = req.params.blogId;
     if (!blogId) {
-        res.status(400).json({ error: "blogId is required" });
+        console.error("blogId seems to be missing in Request inside getSeveralPostsFromBlog, even though it successfully passed middleware checks");
+        return res.status(http_statuses_1.HttpStatus.InternalServerError).json({
+            error: "Internal Server Error",
+        }); // какие-то коды надо передавать, чтобы пользователи могли сообщать их техподдержке
     }
     const postListOutput = yield query_repository_1.dataQueryRepository.getSeveralPostsById(blogId, sanitizedQuery);
     res.status(http_statuses_1.HttpStatus.Ok).send(postListOutput);

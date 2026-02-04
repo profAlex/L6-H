@@ -19,6 +19,7 @@ const map_paginated_post_search_1 = require("../mappers/map-paginated-post-searc
 const map_paginated_user_search_1 = require("../mappers/map-paginated-user-search");
 const map_to_UserViewModel_1 = require("../mappers/map-to-UserViewModel");
 const map_to_UserMeViewModel_1 = require("../mappers/map-to-UserMeViewModel");
+const map_paginated_comment_search_1 = require("../mappers/map-paginated-comment-search");
 function findBlogByPrimaryKey(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return mongo_db_1.bloggersCollection.findOne({ _id: id });
@@ -35,6 +36,30 @@ function findUserByPrimaryKey(id) {
     });
 }
 exports.dataQueryRepository = {
+    getSeveralCommentsByPostId(sentPostId, sentSanitizedQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { sortBy, sortDirection, pageNumber, pageSize } = sentSanitizedQuery;
+            const skip = (pageNumber - 1) * pageSize;
+            const items = yield mongo_db_1.commentsCollection
+                .find({ relatedPostId: sentPostId })
+                // "asc" (по возрастанию), то используется 1
+                // "desc" — то -1 для сортировки по убыванию. - по алфавиту от Я-А, Z-A
+                .sort({ [sortBy]: sortDirection })
+                // пропускаем определённое количество док. перед тем, как вернуть нужный набор данных.
+                .skip(skip)
+                // ограничивает количество возвращаемых документов до значения pageSize
+                .limit(pageSize)
+                .toArray();
+            const totalCount = yield mongo_db_1.commentsCollection.countDocuments({
+                relatedPostId: sentPostId,
+            });
+            return (0, map_paginated_comment_search_1.mapToCommentListPaginatedOutput)(items, {
+                pageNumber: pageNumber,
+                pageSize: pageSize,
+                totalCount,
+            });
+        });
+    },
     // *****************************
     // методы для управления блогами
     // *****************************

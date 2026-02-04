@@ -8,7 +8,7 @@ const mapSingleBloggerCollectionToViewModel = (blogInContainer) => {
         description: blogInContainer.description,
         websiteUrl: blogInContainer.websiteUrl,
         createdAt: blogInContainer.createdAt,
-        isMembership: false // был false
+        isMembership: false, // был false
     };
 };
 exports.mapSingleBloggerCollectionToViewModel = mapSingleBloggerCollectionToViewModel;

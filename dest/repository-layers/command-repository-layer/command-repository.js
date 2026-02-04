@@ -14,118 +14,7 @@ const mongo_db_1 = require("../../db/mongo.db");
 const mongodb_1 = require("mongodb");
 const custom_error_class_1 = require("../utility/custom-error-class");
 const bcrypt_service_1 = require("../../adapters/authentication/bcrypt-service");
-// const __nonDisclosableDatabase = {
-//     bloggerRepository: [{
-//         bloggerInfo:
-//             {
-//                 id: "001",
-//                 name: "blogger_001",
-//                 description: "takoy sebe blogger...",
-//                 websiteUrl: "https://takoy.blogger.com",
-//             },
-//         bloggerPosts:
-//             [{
-//                 id: "001_001",
-//                 title: "post blog 001",
-//                 shortDescription: "post ni o 4em",
-//                 content: "Eto testovoe napolnenie posta 001_001",
-//                 blogId: "001",
-//                 blogName: "blogger_001"
-//             },
-//             {
-//                 id: "001_002",
-//                 title: "post blog 002",
-//                 shortDescription: "post ni o 4em",
-//                 content: "Eto testovoe napolnenie posta 001_002",
-//                 blogId: "001",
-//                 blogName: "blogger_001"
-//             }
-//         ]},
-//         {
-//             bloggerInfo:
-//             {
-//                 id: "002",
-//                 name: "blogger_002",
-//                 description: "a eto klassnii blogger!",
-//                 wbesiteUrl: "https://klassnii.blogger.com"
-//             },
-//             bloggerPosts:
-//             [{
-//                 id: "002_001",
-//                 title: "post blog 001",
-//                 shortDescription: "horowii post",
-//                 content: "Eto testovoe napolnenie posta 002_001",
-//                 blogId: "002",
-//                 blogName: "blogger_002"
-//             },
-//             {
-//                 postId: "002_002",
-//                 postTitle: "post blog 002",
-//                 postShortDescription: "horowii post",
-//                 postContent: "Eto testovoe napolnenie posta 002_002",
-//                 blogId: "002",
-//                 blogName: "blogger_002"
-//             }]
-//         }
-//     ]
-// const bloggerInfo: bloggerCollectionStorageModel[] = [
-//     {
-//         id: "001",
-//         name: "blogger_001",
-//         description: "takoy sebe blogger...",
-//         websiteUrl: "https://takoy.blogger.com",
-//         createdAt: new Date,
-//         isMembership: false
-//     },
-//     {
-//         id: "002",
-//         name: "blogger_002",
-//         description: "a eto klassnii blogger!",
-//         websiteUrl: "https://klassnii.blogger.com",
-//         createdAt: new Date,
-//         isMembership: false,
-//     }
-// ];
-//
-//
-// const bloggerPosts: postCollectionStorageModel[] = [
-//     {
-//         id: "001_001",
-//         title: "post blog 001",
-//         shortDescription: "post ni o 4em",
-//         content: "Eto testovoe napolnenie posta 001_001",
-//         blogId: "001",
-//         blogName: "blogger_001",
-//         createdAt: new Date()
-//     },
-//     {
-//         id: "001_002",
-//         title: "post blog 002",
-//         shortDescription: "post ni o 4em",
-//         content: "Eto testovoe napolnenie posta 001_002",
-//         blogId: "001",
-//         blogName: "blogger_001",
-//         createdAt: new Date()
-//     },
-//     {
-//         id: "002_001",
-//         title: "post blog 001",
-//         shortDescription: "horowii post",
-//         content: "Eto testovoe napolnenie posta 002_001",
-//         blogId: "002",
-//         blogName: "blogger_002",
-//         createdAt: new Date()
-//     },
-//     {
-//         id: "002_002",
-//         title: "post blog 002",
-//         shortDescription: "horowii post",
-//         content: "Eto testovoe napolnenie posta 002_002",
-//         blogId: "002",
-//         blogName: "blogger_002",
-//         createdAt: new Date()
-//     }
-// ];
+const http_statuses_1 = require("../../common/http-statuses/http-statuses");
 function findBlogByPrimaryKey(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return mongo_db_1.bloggersCollection.findOne({ _id: id });
@@ -136,67 +25,15 @@ function findPostByPrimaryKey(id) {
         return mongo_db_1.postsCollection.findOne({ _id: id });
     });
 }
+function findUserByPrimaryKey(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return mongo_db_1.usersCollection.findOne({ _id: id });
+    });
+}
 exports.dataCommandRepository = {
     // *****************************
     // методы для управления блогами
     // *****************************
-    // перенесли в dataQueryRepository
-    // async getSeveralBlogs(sentInputGetBlogsQuery: InputGetBlogsQuery) : Promise<{items: WithId<BlogViewModel>[]; totalCount: number}> {
-    //     const {
-    //         searchNameTerm,
-    //         sortBy,
-    //         sortDirection,
-    //         pageNumber,
-    //         pageSize,
-    //     } = sentInputGetBlogsQuery;
-    //
-    //     let filter :any = {};
-    //     const skip = (pageNumber - 1) * pageSize;
-    //
-    //     try{
-    //
-    //         if (searchNameTerm && searchNameTerm.trim() !== '') {
-    //             // Экранируем спецсимволы для безопасного $regex
-    //             const escapedTerm = searchNameTerm
-    //                 .trim()
-    //                 .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    //
-    //             filter = {
-    //                 $or: [
-    //                     { name: { $regex: escapedTerm, $options: 'i' } },
-    //                     { description: { $regex: escapedTerm, $options: 'i' } },
-    //                     { websiteUrl: { $regex: escapedTerm, $options: 'i' } },
-    //                 ],
-    //             };
-    //         }
-    //     }
-    //     catch(err){
-    //         console.error("ERROR: ", err)
-    //     }
-    //
-    //     if(!sortBy) {
-    //         console.error("ERROR: sortBy is null or undefined inside dataRepository.getSeveralBlogs");
-    //         throw new Error();
-    //     }
-    //
-    //     const items = await bloggersCollection
-    //         .find(filter)
-    //
-    //         // "asc" (по возрастанию), то используется 1
-    //         // "desc" — то -1 для сортировки по убыванию. - по алфавиту от Я-А, Z-A
-    //         .sort({[sortBy]: sortDirection})
-    //
-    //         // пропускаем определённое количество документов перед тем, как вернуть нужный набор данных.
-    //         .skip(skip)
-    //
-    //         // ограничивает количество возвращаемых документов до значения pageSize
-    //         .limit(pageSize)
-    //         .toArray();
-    //
-    //     const totalCount = await bloggersCollection.countDocuments(filter);
-    //
-    //     return {items, totalCount};
-    // },
     createNewBlog(newBlog) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -211,7 +48,6 @@ exports.dataCommandRepository = {
                         },
                     });
                 }
-                // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
                 return result.insertedId.toString();
             }
             catch (error) {
@@ -233,78 +69,8 @@ exports.dataCommandRepository = {
             }
         });
     },
-    // async getSeveralPostsById(sentBlogId:string, sentSanitizedQuery: InputGetBlogPostsByIdQuery) : Promise<{items: WithId<PostViewModel>[]; totalCount: number}> {
-    //     const {
-    //         sortBy,
-    //         sortDirection,
-    //         pageNumber,
-    //         pageSize,
-    //     } = sentSanitizedQuery;
-    //
-    //     const skip = (pageNumber - 1) * pageSize;
-    //
-    //     if(!sortBy) {
-    //         console.error("ERROR: sortBy is null or undefined inside dataRepository.getSeveralPostsById");
-    //         throw new Error();
-    //     }
-    //
-    //     const items = await postsCollection
-    //         .find({blogId: sentBlogId})
-    //
-    //         // "asc" (по возрастанию), то используется 1
-    //         // "desc" — то -1 для сортировки по убыванию. - по алфавиту от Я-А, Z-A
-    //         .sort({[sortBy]: sortDirection})
-    //
-    //         // пропускаем определённое количество док. перед тем, как вернуть нужный набор данных.
-    //         .skip(skip)
-    //
-    //         // ограничивает количество возвращаемых документов до значения pageSize
-    //         .limit(pageSize)
-    //         .toArray();
-    //
-    //     const totalCount = await postsCollection.countDocuments({blogId: sentBlogId});
-    //
-    //     return {items, totalCount};
-    // },
-    //
-    // async findSingleBlog(blogId: string): Promise<BlogViewModel | undefined> {
-    //
-    //     if (ObjectId.isValid(blogId)) {
-    //
-    //         const blogger: bloggerCollectionStorageModel | null = await findBlogByPrimaryKey(new ObjectId(blogId));
-    //
-    //         if(blogger)
-    //         {
-    //             // const foundBlogger = {
-    //             //     id: blogger.bloggerInfo.id,
-    //             //     name: blogger.bloggerInfo.name,
-    //             //     description: blogger.bloggerInfo.description,
-    //             //     websiteUrl: blogger.bloggerInfo.websiteUrl
-    //             // }
-    //
-    //             // console.log("ID inside finding function:", foundBlogger.id);
-    //
-    //             return mapSingleBloggerCollectionToViewModel(blogger);
-    //         }
-    //     }
-    //
-    //     return undefined;
-    // },
     updateBlog(blogId, newData) {
         return __awaiter(this, void 0, void 0, function* () {
-            // if (ObjectId.isValid(blogId)) {
-            //
-            //     const idToCheck = new ObjectId(blogId);
-            //     const res = await bloggersCollection.updateOne(
-            //         {_id: idToCheck},
-            //         {$set: {...newData}}
-            //     );
-            //
-            //     if(res.matchedCount === 1)
-            //     {
-            //         return null;
-            //     }
-            // }
             try {
                 if (mongodb_1.ObjectId.isValid(blogId)) {
                     const idToCheck = new mongodb_1.ObjectId(blogId);
@@ -351,18 +117,6 @@ exports.dataCommandRepository = {
     },
     deleteBlog(blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // if (ObjectId.isValid(blogId)) {
-            //     const idToCheck = new ObjectId(blogId);
-            //     const res = await bloggersCollection.deleteOne({_id: idToCheck});
-            //
-            //
-            //
-            //     if(res.deletedCount === 1)
-            //     {
-            //         await postsCollection.deleteMany({ blogId: blogId }); // Надо связанные посты удалять?????????????????
-            //         return null;
-            //     }
-            // }
             try {
                 if (mongodb_1.ObjectId.isValid(blogId)) {
                     const idToCheck = new mongodb_1.ObjectId(blogId);
@@ -382,9 +136,6 @@ exports.dataCommandRepository = {
                     }
                 }
                 else {
-                    // throw new CustomError({
-                    //     errorMessage: { field: 'ObjectId.isValid(blogId)', message: 'invalid blog ID' }
-                    // });
                     return undefined;
                 }
             }
@@ -412,9 +163,7 @@ exports.dataCommandRepository = {
     // *****************************
     getAllPosts() {
         return __awaiter(this, void 0, void 0, function* () {
-            // return __nonDisclosableDatabase.bloggerRepository.flatMap((element: bloggerRawData):PostViewModel[] | [] => (element.bloggerPosts ?? []));
             const tempContainer = yield mongo_db_1.postsCollection.find({}).toArray();
-            // console.log('LOOK HERE ---->', tempContainer.length);
             return tempContainer.map((value) => ({
                 id: value._id.toString(),
                 title: value.title,
@@ -452,7 +201,6 @@ exports.dataCommandRepository = {
                             });
                         }
                         return result.insertedId.toString();
-                        // return mapSinglePostCollectionToViewModel(newPostEntry);
                     }
                     else {
                         throw new custom_error_class_1.CustomError({
@@ -580,15 +328,6 @@ exports.dataCommandRepository = {
     },
     deletePost(postId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // if (ObjectId.isValid(postId)) {
-            //     const idToCheck = new ObjectId(postId);
-            //     const res = await postsCollection.deleteOne({_id: idToCheck});
-            //
-            //     if(res.deletedCount === 1)
-            //     {
-            //         return null;
-            //     }
-            // }
             try {
                 if (mongodb_1.ObjectId.isValid(postId)) {
                     const idToCheck = new mongodb_1.ObjectId(postId);
@@ -649,7 +388,6 @@ exports.dataCommandRepository = {
                     passwordHash: passwordHash,
                     createdAt: new Date(),
                 };
-                // console.log(JSON.stringify(newUserEntry));
                 const result = yield mongo_db_1.usersCollection.insertOne(newUserEntry);
                 if (!result.acknowledged) {
                     throw new custom_error_class_1.CustomError({
@@ -659,8 +397,6 @@ exports.dataCommandRepository = {
                         },
                     });
                 }
-                // console.log(JSON.stringify(newUserEntry));
-                // return mapSingleBloggerCollectionToViewModel(newBlogEntry);
                 return result.insertedId.toString();
             }
             catch (error) {
@@ -700,9 +436,6 @@ exports.dataCommandRepository = {
                     }
                 }
                 else {
-                    // throw new CustomError({
-                    //     errorMessage: { field: 'ObjectId.isValid(userId)', message: 'invalid user ID' }
-                    // });
                     return undefined;
                 }
             }
@@ -715,13 +448,108 @@ exports.dataCommandRepository = {
                     else {
                         console.error(`Unknown error: ${JSON.stringify(error)}`);
                     }
-                    // throw new Error('Placeholder for an error in to be rethrown and dealt with in the future in createNewBlog method of dataCommandRepository');
                     return undefined;
                 }
                 else {
                     console.error(`Unknown error inside dataCommandRepository.deleteUser: ${JSON.stringify(error)}`);
                     throw new Error("Placeholder for an error to be rethrown and dealt with in the future in deleteUser method of dataCommandRepository");
                 }
+            }
+        });
+    },
+    // *****************************
+    // методы для управления комментариями
+    // *****************************
+    createNewComment(postId, content, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (mongodb_1.ObjectId.isValid(userId) && mongodb_1.ObjectId.isValid(postId)) {
+                    // проверяем существует ли такой юзер и возвращаем его логин
+                    // ищем существует ли такой пост
+                    // создаем временный объект, куда записываем postId, userId, создаем и записываем id нового объекта
+                    const user = yield findUserByPrimaryKey(new mongodb_1.ObjectId(userId));
+                    if (!user) {
+                        return {
+                            data: null,
+                            statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                            statusDescription: "User is not found, possibly because its token is valid but user-record was already deleted or due to an database error",
+                            errorsMessages: [
+                                {
+                                    field: "dataCommandRepository.createNewComment -> findUserByPrimaryKey(new ObjectId(userId))", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                    message: "Couldn't find User record", // ошибкам надо присваивать кода, чтобы пользователи могли сообщать номер ошибки в техподдержку
+                                },
+                            ],
+                        };
+                    }
+                    const userLogin = user.login;
+                    // тут по-идее также проверка на соответствие userLogin требованиям?
+                    const tempId = new mongodb_1.ObjectId();
+                    const newCommentEntry = {
+                        _id: tempId,
+                        id: tempId.toString(),
+                        relatedPostId: postId,
+                        content: content,
+                        commentatorInfo: { userId: userId, userLogin: userLogin },
+                        createdAt: new Date(),
+                    };
+                    const result = yield mongo_db_1.commentsCollection.insertOne(newCommentEntry);
+                    if (!result.acknowledged) {
+                        return {
+                            data: null,
+                            statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                            statusDescription: "Error while inserting new comment",
+                            errorsMessages: [
+                                {
+                                    field: "dataCommandRepository.createNewComment -> commentsCollection.insertOne(newCommentEntry)", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                    message: "Error while inserting new comment",
+                                },
+                            ],
+                        };
+                    }
+                    return {
+                        data: {
+                            id: newCommentEntry.id,
+                            content: newCommentEntry.content,
+                            commentatorInfo: newCommentEntry.commentatorInfo,
+                            createdAt: newCommentEntry.createdAt,
+                        },
+                        statusCode: http_statuses_1.HttpStatus.Created,
+                        errorsMessages: [
+                            {
+                                field: null,
+                                message: null,
+                            },
+                        ],
+                    };
+                }
+                else {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                        statusDescription: "User ID or Post ID dont look like valid mongo ID. Need to check input data and corresponding user and post records.",
+                        errorsMessages: [
+                            {
+                                field: "dataCommandRepository.createNewComment -> if (ObjectId.isValid(userId) && ObjectId.isValid(postId))", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: "User ID or Post ID have invalid format",
+                            },
+                        ],
+                    };
+                }
+            }
+            catch (error) {
+                console.error(`Unknown error: ${JSON.stringify(error)}`);
+                // throw new Error("Placeholder for an error to be rethrown and dealt with in the future in createNewUser method of dataCommandRepository");
+                return {
+                    data: null,
+                    statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                    statusDescription: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                    errorsMessages: [
+                        {
+                            field: "dataCommandRepository.createNewComment", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                        },
+                    ],
+                };
             }
         });
     },

@@ -12,7 +12,8 @@ const id_verification_and_validation_1 = require("./validation-middleware/id-ver
 const id_names_1 = require("./util-enums/id-names");
 const collection_names_1 = require("../db/collection-names");
 exports.usersRouter = (0, express_1.Router)();
-const validateBlogIdForGeneralCRUDEndpoints = (0, id_verification_and_validation_1.createIdValidator)(id_names_1.IdParamName.PostId, collection_names_1.CollectionNames.Users);
+const validateUserId = (0, id_verification_and_validation_1.createIdValidator)(id_names_1.IdParamName.UserId, collection_names_1.CollectionNames.Users);
 exports.usersRouter.get("/", base64_auth_guard_middleware_1.superAdminGuardMiddleware, (0, pagination_validators_1.inputPaginationValidatorForUsers)(fields_for_sorting_1.UsersSortListEnum), error_management_validation_middleware_1.inputErrorManagementMiddleware, user_router_description_1.getSeveralUsers);
 exports.usersRouter.post("/", base64_auth_guard_middleware_1.superAdminGuardMiddleware, UserInputModel_validation_middleware_1.userInputModelValidation, error_management_validation_middleware_1.inputErrorManagementMiddleware, user_router_description_1.createNewUser);
-exports.usersRouter.delete("/:id", base64_auth_guard_middleware_1.superAdminGuardMiddleware, validateBlogIdForGeneralCRUDEndpoints, error_management_validation_middleware_1.inputErrorManagementMiddleware, user_router_description_1.deleteUser);
+exports.usersRouter.delete("/:userId", // было просто :id
+base64_auth_guard_middleware_1.superAdminGuardMiddleware, validateUserId, error_management_validation_middleware_1.inputErrorManagementMiddleware, user_router_description_1.deleteUser);

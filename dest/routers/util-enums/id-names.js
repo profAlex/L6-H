@@ -5,4 +5,6 @@ var IdParamName;
 (function (IdParamName) {
     IdParamName["PostId"] = "postId";
     IdParamName["BlogId"] = "blogId";
+    IdParamName["UserId"] = "userId";
+    IdParamName["CommentId"] = "commentId";
 })(IdParamName || (exports.IdParamName = IdParamName = {}));

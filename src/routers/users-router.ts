@@ -15,8 +15,8 @@ import { CollectionNames } from "../db/collection-names";
 
 export const usersRouter = Router();
 
-const validateBlogIdForGeneralCRUDEndpoints = createIdValidator(
-    IdParamName.PostId,
+const validateUserId = createIdValidator(
+    IdParamName.UserId,
     CollectionNames.Users,
 );
 
@@ -35,9 +35,9 @@ usersRouter.post(
     createNewUser,
 );
 usersRouter.delete(
-    "/:id",
+    "/:userId", // было просто :id
     superAdminGuardMiddleware,
-    validateBlogIdForGeneralCRUDEndpoints,
+    validateUserId,
     inputErrorManagementMiddleware,
     deleteUser,
 );

@@ -31,6 +31,9 @@ import { InputGetPostsQuery } from "../../routers/router-types/post-search-input
 import { PaginatedCommentViewModel } from "../../routers/router-types/comment-paginated-view-model";
 import { mapToCommentListPaginatedOutput } from "../mappers/map-paginated-comment-search";
 import { InputGetCommentsQueryModel } from "../../routers/router-types/comment-search-input-query-model";
+import { CommentViewModel } from "../../routers/router-types/comment-view-model";
+import { CommentStorageModel } from "../../routers/router-types/comment-storage-model";
+import { mapSingleCommentToViewModel } from "../mappers/map-to-CommentViewModel";
 
 async function findBlogByPrimaryKey(
     id: ObjectId,
@@ -48,6 +51,12 @@ async function findUserByPrimaryKey(
     id: ObjectId,
 ): Promise<UserCollectionStorageModel | null> {
     return usersCollection.findOne({ _id: id });
+}
+
+async function findCommentByPrimaryKey(
+    id: ObjectId,
+): Promise<CommentStorageModel | null> {
+    return commentsCollection.findOne({ _id: id });
 }
 
 export const dataQueryRepository = {
@@ -85,6 +94,21 @@ export const dataQueryRepository = {
         });
     },
 
+    async findSingleComment(
+        commentId: string,
+    ): Promise<CommentViewModel | undefined> {
+        if (ObjectId.isValid(commentId)) {
+            const comment = await findCommentByPrimaryKey(
+                new ObjectId(commentId),
+            );
+
+            if (comment) {
+                return mapSingleCommentToViewModel(comment);
+            }
+        }
+
+        return undefined;
+    },
     // *****************************
     // методы для управления блогами
     // *****************************

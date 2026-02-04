@@ -16,10 +16,10 @@ const query_repository_1 = require("../../repository-layers/query-repository-lay
 const attemptToLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
     const loginResult = yield auth_service_1.authService.loginUser(loginOrEmail, password);
-    if (!loginResult.data)
-        return res
-            .status(loginResult.statusCode)
-            .send(loginResult.errorsMessages);
+    if (!loginResult.data) {
+        console.error("Error description: ", loginResult === null || loginResult === void 0 ? void 0 : loginResult.statusDescription, JSON.stringify(loginResult.errorsMessages));
+        return res.status(loginResult.statusCode).send("Error");
+    }
     return res.status(http_statuses_1.HttpStatus.Ok).send(loginResult.data);
 });
 exports.attemptToLogin = attemptToLogin;

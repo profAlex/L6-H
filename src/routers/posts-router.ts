@@ -35,7 +35,7 @@ const validateParameterPostId = createIdValidator(
 
 // creates new comment
 postsRouter.post(
-    "/:postId/comments",
+    `/:${IdParamName.PostId}/comments`,
     tokenGuardVerification,
     validateParameterPostId,
     commentInputModelValidation,
@@ -43,9 +43,9 @@ postsRouter.post(
     createNewComment,
 );
 
-// requests a comments for specified postId
+// requests a list of comments for specified postId
 postsRouter.get(
-    "/:postId/comments",
+    `/:${IdParamName.PostId}/comments`,
     validateParameterPostId,
     inputPaginationValidatorForComments(CommentsSortListEnum),
     inputErrorManagementMiddleware,

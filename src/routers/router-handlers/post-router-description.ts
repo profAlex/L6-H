@@ -46,7 +46,7 @@ export const getSeveralCommentsByPostId = async (
             sanitizedQuery,
         );
 
-    res.status(HttpStatus.Ok).send(commentsListOutput!);
+    return res.status(HttpStatus.Ok).send(commentsListOutput!);
 };
 
 export const getSeveralPosts = async (req: Request, res: Response) => {

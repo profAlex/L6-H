@@ -9,7 +9,7 @@ const mapSinglePostCollectionToViewModel = (postInContainer) => {
         content: postInContainer.content,
         blogId: postInContainer.blogId,
         blogName: postInContainer.blogName,
-        createdAt: postInContainer.createdAt
+        createdAt: postInContainer.createdAt,
     };
 };
 exports.mapSinglePostCollectionToViewModel = mapSinglePostCollectionToViewModel;
