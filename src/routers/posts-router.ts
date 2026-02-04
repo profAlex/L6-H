@@ -4,6 +4,7 @@ import {
     createNewPost,
     deletePost,
     findSinglePost,
+    getSeveralCommentsByPostId,
     getSeveralPosts,
     updatePost,
 } from "./router-handlers/post-router-description";
@@ -14,8 +15,14 @@ import { superAdminGuardMiddleware } from "./validation-middleware/base64-auth-g
 import { IdParamName } from "./util-enums/id-names";
 import { CollectionNames } from "../db/collection-names";
 import { createIdValidator } from "./validation-middleware/id-verification-and-validation";
-import { inputPaginationValidatorForPosts } from "./validation-middleware/pagination-validators";
-import { PostsSortListEnum } from "./util-enums/fields-for-sorting";
+import {
+    inputPaginationValidatorForComments,
+    inputPaginationValidatorForPosts,
+} from "./validation-middleware/pagination-validators";
+import {
+    CommentsSortListEnum,
+    PostsSortListEnum,
+} from "./util-enums/fields-for-sorting";
 import { tokenGuardVerification } from "./guard-middleware/token-guard";
 import { commentInputModelValidation } from "./validation-middleware/comment-input-model-validation";
 
@@ -26,7 +33,7 @@ const validateParameterPostId = createIdValidator(
     CollectionNames.Posts,
 );
 
-// creates a comment
+// creates new comment
 postsRouter.post(
     "/:postId/comments",
     tokenGuardVerification,
@@ -34,6 +41,15 @@ postsRouter.post(
     commentInputModelValidation,
     inputErrorManagementMiddleware,
     createNewComment,
+);
+
+// requests a comments for specified postId
+postsRouter.get(
+    "/:postId/comments",
+    validateParameterPostId,
+    inputPaginationValidatorForComments(CommentsSortListEnum),
+    inputErrorManagementMiddleware,
+    getSeveralCommentsByPostId,
 );
 
 // Returns all posts

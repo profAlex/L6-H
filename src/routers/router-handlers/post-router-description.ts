@@ -8,10 +8,46 @@ import { UserIdType } from "../router-types/user-id-type";
 import {
     RequestWithBodyAndUserId,
     RequestWithParamsAndBodyAndUserId,
+    RequestWithParamsAndQuery,
     RequestWithUserId,
 } from "../request-types/request-types";
 import { CommentInputModel } from "../router-types/comment-input-model";
 import { IdParamName } from "../util-enums/id-names";
+import { PaginatedCommentViewModel } from "../router-types/comment-paginated-view-model";
+import { InputGetCommentsQueryModel } from "../router-types/comment-search-input-query-model";
+
+export const getSeveralCommentsByPostId = async (
+    req: RequestWithParamsAndQuery<
+        { [IdParamName.PostId]: string },
+        any //InputGetCommentsQueryModel
+    >,
+    res: Response,
+) => {
+    const sanitizedQuery = matchedData<InputGetCommentsQueryModel>(req, {
+        locations: ["query"],
+        includeOptionals: true,
+    }); //утилита для извечения трансформированных значений после валидатара
+    //в req.query остаются сырые квери параметры (строки)
+
+    const postId = req.params[IdParamName.PostId];
+    if (!postId) {
+        console.error(
+            "postId seems to be missing in Request inside getSeveralPostsFromBlog, even though it successfully passed middleware checks",
+        );
+
+        return res.status(HttpStatus.InternalServerError).json({
+            error: "Internal Server Error",
+        }); // какие-то коды надо передавать, чтобы пользователи могли сообщать их техподдержке
+    }
+
+    const commentsListOutput: PaginatedCommentViewModel =
+        await dataQueryRepository.getSeveralCommentsByPostId(
+            postId,
+            sanitizedQuery,
+        );
+
+    res.status(HttpStatus.Ok).send(commentsListOutput!);
+};
 
 export const getSeveralPosts = async (req: Request, res: Response) => {
     const sanitizedQuery = matchedData<InputGetPostsQuery>(req, {

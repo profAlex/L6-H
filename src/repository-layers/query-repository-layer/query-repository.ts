@@ -2,6 +2,7 @@ import { PaginatedBlogViewModel } from "../../routers/router-types/blog-paginate
 import { InputGetBlogsQuery } from "../../routers/router-types/blog-search-input-model";
 import {
     bloggersCollection,
+    commentsCollection,
     postsCollection,
     usersCollection,
 } from "../../db/mongo.db";
@@ -26,6 +27,10 @@ import { mapSingleUserCollectionToViewModel } from "../mappers/map-to-UserViewMo
 import { UserCollectionStorageModel } from "../../routers/router-types/user-storage-model";
 import { UserMeViewModel } from "../../routers/router-types/user-me-view-model";
 import { mapSingleUserCollectionToMeViewModel } from "../mappers/map-to-UserMeViewModel";
+import { InputGetPostsQuery } from "../../routers/router-types/post-search-input-model";
+import { PaginatedCommentViewModel } from "../../routers/router-types/comment-paginated-view-model";
+import { mapToCommentListPaginatedOutput } from "../mappers/map-paginated-comment-search";
+import { InputGetCommentsQueryModel } from "../../routers/router-types/comment-search-input-query-model";
 
 async function findBlogByPrimaryKey(
     id: ObjectId,
@@ -46,6 +51,40 @@ async function findUserByPrimaryKey(
 }
 
 export const dataQueryRepository = {
+    async getSeveralCommentsByPostId(
+        sentPostId: string,
+        sentSanitizedQuery: InputGetCommentsQueryModel,
+    ): Promise<PaginatedCommentViewModel> {
+        const { sortBy, sortDirection, pageNumber, pageSize } =
+            sentSanitizedQuery;
+
+        const skip = (pageNumber - 1) * pageSize;
+
+        const items = await commentsCollection
+            .find({ relatedPostId: sentPostId })
+
+            // "asc" (по возрастанию), то используется 1
+            // "desc" — то -1 для сортировки по убыванию. - по алфавиту от Я-А, Z-A
+            .sort({ [sortBy]: sortDirection })
+
+            // пропускаем определённое количество док. перед тем, как вернуть нужный набор данных.
+            .skip(skip)
+
+            // ограничивает количество возвращаемых документов до значения pageSize
+            .limit(pageSize)
+            .toArray();
+
+        const totalCount = await commentsCollection.countDocuments({
+            relatedPostId: sentPostId,
+        });
+
+        return mapToCommentListPaginatedOutput(items, {
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            totalCount,
+        });
+    },
+
     // *****************************
     // методы для управления блогами
     // *****************************

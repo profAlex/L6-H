@@ -48,7 +48,13 @@ export const getSeveralPostsFromBlog = async (req: Request, res: Response) => {
 
     const blogId = req.params.blogId;
     if (!blogId) {
-        res.status(400).json({ error: "blogId is required" });
+        console.error(
+            "blogId seems to be missing in Request inside getSeveralPostsFromBlog, even though it successfully passed middleware checks",
+        );
+
+        return res.status(HttpStatus.InternalServerError).json({
+            error: "Internal Server Error",
+        }); // какие-то коды надо передавать, чтобы пользователи могли сообщать их техподдержке
     }
 
     const postListOutput = await dataQueryRepository.getSeveralPostsById(
