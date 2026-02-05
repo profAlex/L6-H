@@ -5,6 +5,7 @@ import { CollectionNames } from "../db/collection-names";
 import { inputErrorManagementMiddleware } from "./validation-middleware/error-management-validation-middleware";
 import { commentInputModelValidation } from "./validation-middleware/comment-input-model-validation";
 import {
+    deleteCommentById,
     getCommentById,
     updateCommentById,
 } from "./router-handlers/comment-router-description";

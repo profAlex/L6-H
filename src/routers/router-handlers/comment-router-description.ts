@@ -44,10 +44,41 @@ export const updateCommentById = async (
             field: "",
         });
     }
+
     const result = await dataCommandRepository.updateCommentById(
         req.params[IdParamName.CommentId],
         req.user.userId,
         req.body,
+    );
+
+    if (result.statusCode !== HttpStatus.NoContent) {
+        return res.status(result.statusCode).json(result.errorsMessages);
+    }
+
+    return res.sendStatus(result.statusCode);
+};
+
+export const deleteCommentById = async (
+    req: RequestWithParams<{ [IdParamName.CommentId]: string }>,
+    res: Response,
+) => {
+    // проверка наличия userId в структуре req
+    if (!req.user || !req.user.userId) {
+        console.error({
+            message:
+                "Required parameter is missing: 'req.user or req.user.userId' inside deleteCommentById handler",
+            field: "'if (!req.user || !req.user.userId)' check failed",
+        });
+
+        return res.status(HttpStatus.InternalServerError).json({
+            message: "Internal server error",
+            field: "",
+        });
+    }
+
+    const result = await dataCommandRepository.deleteCommentById(
+        req.params[IdParamName.CommentId],
+        req.user.userId,
     );
 
     if (result.statusCode !== HttpStatus.NoContent) {
