@@ -61,6 +61,11 @@ async function validateId(
                 { _id: new ObjectId(sentId) },
                 { projection: { _id: 1 } },
             );
+        } else if (collectionName === "commentsCollection") {
+            result = await usersCollection.findOne(
+                { _id: new ObjectId(sentId) },
+                { projection: { _id: 1 } },
+            );
         } else {
             result = null;
         }

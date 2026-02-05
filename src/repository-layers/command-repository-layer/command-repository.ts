@@ -19,6 +19,7 @@ import { CustomResult } from "../../common/result-type/result-type";
 import { token } from "../../adapters/verification/token-type";
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { CommentStorageModel } from "../../routers/router-types/comment-storage-model";
+import { CommentInputModel } from "../../routers/router-types/comment-input-model";
 
 export type BloggerCollectionStorageModel = {
     _id: ObjectId;
@@ -57,6 +58,12 @@ async function findUserByPrimaryKey(
     id: ObjectId,
 ): Promise<UserCollectionStorageModel | null> {
     return usersCollection.findOne({ _id: id });
+}
+
+async function findCommentByPrimaryKey(
+    id: ObjectId,
+): Promise<CommentStorageModel | null> {
+    return commentsCollection.findOne({ _id: id });
 }
 
 export const dataCommandRepository = {
@@ -674,6 +681,89 @@ export const dataCommandRepository = {
                     },
                 ],
             } as CustomResult<CommentViewModel>;
+        }
+    },
+
+    async updateCommentById(
+        sentCommentId: string,
+        sentUserId: string,
+        sentContent: CommentInputModel,
+    ): Promise<CustomResult> {
+        try {
+            const comment = await findCommentByPrimaryKey(
+                new ObjectId(sentCommentId),
+            );
+
+            if (!comment) {
+                return {
+                    data: null,
+                    statusCode: HttpStatus.InternalServerError,
+                    statusDescription: `Comment is not found by sent comment ID ${sentCommentId} inside dataCommandRepository.updateCommentById. Even though this exact ID passed existence check in middlewares previously.`,
+                    errorsMessages: [
+                        {
+                            field: "if (!comment) inside dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: `Internal Server Error`,
+                        },
+                    ],
+                } as CustomResult;
+            }
+
+            if (sentUserId !== comment.commentatorInfo.userId) {
+                return {
+                    data: null,
+                    statusCode: HttpStatus.Forbidden,
+                    statusDescription: `User is forbidden to change another user’s comment`,
+                    errorsMessages: [
+                        {
+                            field: "if (sentUserId !== comment.commentatorInfo.userId) inside dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: `User is forbidden to change another user’s comment`,
+                        },
+                    ],
+                } as CustomResult;
+            }
+
+            const res = await bloggersCollection.updateOne(
+                { _id: new ObjectId(sentCommentId) },
+                { $set: { content: sentContent.content } },
+            );
+
+            if (!res.acknowledged) {
+                return {
+                    data: null,
+                    statusCode: HttpStatus.InternalServerError,
+                    statusDescription: `Unknown error inside bloggersCollection.updateOne inside dataCommandRepository.updateCommentById`,
+                    errorsMessages: [
+                        {
+                            field: "bloggersCollection.updateOne inside dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: `Unknown error while trying to update comment`,
+                        },
+                    ],
+                } as CustomResult;
+            }
+
+            return {
+                data: null,
+                statusCode: HttpStatus.NoContent,
+                statusDescription: "",
+                errorsMessages: [
+                    {
+                        field: "",
+                        message: "",
+                    },
+                ],
+            } as CustomResult;
+        } catch (error) {
+            return {
+                data: null,
+                statusCode: HttpStatus.InternalServerError,
+                statusDescription: `Unknown error inside try-catch block inside dataCommandRepository.updateCommentById: ${JSON.stringify(error)}`,
+                errorsMessages: [
+                    {
+                        field: "dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                        message: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                    },
+                ],
+            } as CustomResult;
         }
     },
 

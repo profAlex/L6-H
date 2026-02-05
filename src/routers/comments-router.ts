@@ -4,7 +4,10 @@ import { createIdValidator } from "./validation-middleware/id-verification-and-v
 import { CollectionNames } from "../db/collection-names";
 import { inputErrorManagementMiddleware } from "./validation-middleware/error-management-validation-middleware";
 import { commentInputModelValidation } from "./validation-middleware/comment-input-model-validation";
-import { getCommentById } from "./router-handlers/comment-router-description";
+import {
+    getCommentById,
+    updateCommentById,
+} from "./router-handlers/comment-router-description";
 import { tokenGuardVerification } from "./guard-middleware/token-guard";
 
 export const commentsRouter = Router();
