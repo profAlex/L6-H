@@ -17,16 +17,14 @@ const getConfig = () => {
         console.warn(`PORT is not defined in .env! Applied default port number ${DEFAULT_PORT}.`);
         appPort = DEFAULT_PORT;
     }
-    //
-    // if (!jwtSecret) {
-    //   console.warn("JWT_SECRET is not defined in .env! Applied default port number 3003.");
-    //   jwtSecret = "3003";
-    // }
-    if (!jwtSecret)
-        throw new Error("JWT_SECRET is required in .env");
     if (!jwtExpiresIn) {
         console.warn(`JWT_EXPIRES_IN is not defined in .env! Applied default port number: ${DEFAULT_JWT_EXPIRES_IN}.`);
         jwtExpiresIn = DEFAULT_PORT;
+    }
+    // if (!jwtSecret) throw new Error("JWT_SECRET is required in .env");
+    if (!jwtSecret) {
+        console.warn("JWT_SECRET is not defined in .env! Applied default value.");
+        jwtSecret = "ryuas235GCPHvlt347782uzHBSDuw4hr";
     }
     return {
         appPort: parseInt(appPort, 10),

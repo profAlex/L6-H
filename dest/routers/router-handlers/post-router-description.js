@@ -29,7 +29,7 @@ const getSeveralCommentsByPostId = (req, res) => __awaiter(void 0, void 0, void 
         }); // какие-то коды надо передавать, чтобы пользователи могли сообщать их техподдержке
     }
     const commentsListOutput = yield query_repository_1.dataQueryRepository.getSeveralCommentsByPostId(postId, sanitizedQuery);
-    res.status(http_statuses_1.HttpStatus.Ok).send(commentsListOutput);
+    return res.status(http_statuses_1.HttpStatus.Ok).send(commentsListOutput);
 });
 exports.getSeveralCommentsByPostId = getSeveralCommentsByPostId;
 const getSeveralPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -30,6 +30,11 @@ function findUserByPrimaryKey(id) {
         return mongo_db_1.usersCollection.findOne({ _id: id });
     });
 }
+function findCommentByPrimaryKey(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return mongo_db_1.commentsCollection.findOne({ _id: id });
+    });
+}
 exports.dataCommandRepository = {
     // *****************************
     // методы для управления блогами
@@ -546,6 +551,150 @@ exports.dataCommandRepository = {
                     errorsMessages: [
                         {
                             field: "dataCommandRepository.createNewComment", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                        },
+                    ],
+                };
+            }
+        });
+    },
+    updateCommentById(sentCommentId, sentUserId, sentContent) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const comment = yield findCommentByPrimaryKey(new mongodb_1.ObjectId(sentCommentId));
+                if (!comment) {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                        statusDescription: `Comment is not found by sent comment ID ${sentCommentId} inside dataCommandRepository.updateCommentById. Even though this exact ID passed existence check in middlewares previously.`,
+                        errorsMessages: [
+                            {
+                                field: "if (!comment) inside dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: `Internal Server Error`,
+                            },
+                        ],
+                    };
+                }
+                if (sentUserId !== comment.commentatorInfo.userId) {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.Forbidden,
+                        statusDescription: `User is forbidden to change another user’s comment`,
+                        errorsMessages: [
+                            {
+                                field: "if (sentUserId !== comment.commentatorInfo.userId) inside dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: `User is forbidden to change another user’s comment`,
+                            },
+                        ],
+                    };
+                }
+                const res = yield mongo_db_1.bloggersCollection.updateOne({ _id: new mongodb_1.ObjectId(sentCommentId) }, { $set: { content: sentContent.content } });
+                if (!res.acknowledged) {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                        statusDescription: `Unknown error inside bloggersCollection.updateOne inside dataCommandRepository.updateCommentById`,
+                        errorsMessages: [
+                            {
+                                field: "bloggersCollection.updateOne inside dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: `Unknown error while trying to update comment`,
+                            },
+                        ],
+                    };
+                }
+                return {
+                    data: null,
+                    statusCode: http_statuses_1.HttpStatus.NoContent,
+                    statusDescription: "",
+                    errorsMessages: [
+                        {
+                            field: "",
+                            message: "",
+                        },
+                    ],
+                };
+            }
+            catch (error) {
+                return {
+                    data: null,
+                    statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                    statusDescription: `Unknown error inside try-catch block inside dataCommandRepository.updateCommentById: ${JSON.stringify(error)}`,
+                    errorsMessages: [
+                        {
+                            field: "dataCommandRepository.updateCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                            message: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
+                        },
+                    ],
+                };
+            }
+        });
+    },
+    deleteCommentById(sentCommentId, sentUserId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const comment = yield findCommentByPrimaryKey(new mongodb_1.ObjectId(sentCommentId));
+                if (!comment) {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                        statusDescription: `Comment is not found by sent comment ID ${sentCommentId} inside dataCommandRepository.deleteCommentById. Even though this exact ID passed existence check in middlewares previously.`,
+                        errorsMessages: [
+                            {
+                                field: "if (!comment) inside dataCommandRepository.deleteCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: `Internal Server Error`,
+                            },
+                        ],
+                    };
+                }
+                if (sentUserId !== comment.commentatorInfo.userId) {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.Forbidden,
+                        statusDescription: `User is forbidden to delete another user’s comment`,
+                        errorsMessages: [
+                            {
+                                field: "if (sentUserId !== comment.commentatorInfo.userId) inside dataCommandRepository.deleteCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: `User is forbidden to delete another user’s comment`,
+                            },
+                        ],
+                    };
+                }
+                const res = yield mongo_db_1.bloggersCollection.deleteOne({
+                    _id: new mongodb_1.ObjectId(sentCommentId),
+                });
+                if (!res.acknowledged) {
+                    return {
+                        data: null,
+                        statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                        statusDescription: `Unknown error inside bloggersCollection.deleteOne inside dataCommandRepository.deleteCommentById`,
+                        errorsMessages: [
+                            {
+                                field: "bloggersCollection.deleteOne inside dataCommandRepository.deleteCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
+                                message: `Unknown error while trying to delete comment`,
+                            },
+                        ],
+                    };
+                }
+                return {
+                    data: null,
+                    statusCode: http_statuses_1.HttpStatus.NoContent,
+                    statusDescription: "",
+                    errorsMessages: [
+                        {
+                            field: "",
+                            message: "",
+                        },
+                    ],
+                };
+            }
+            catch (error) {
+                return {
+                    data: null,
+                    statusCode: http_statuses_1.HttpStatus.InternalServerError,
+                    statusDescription: `Unknown error inside try-catch block inside dataCommandRepository.deleteCommentById: ${JSON.stringify(error)}`,
+                    errorsMessages: [
+                        {
+                            field: "dataCommandRepository.deleteCommentById", // это служебная и отладочная информация, к ней НЕ должен иметь доступ фронтенд, обрабатываем внутри периметра работы бэкэнда
                             message: `Unknown error inside try-catch block: ${JSON.stringify(error)}`,
                         },
                     ],

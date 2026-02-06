@@ -20,6 +20,7 @@ const map_paginated_user_search_1 = require("../mappers/map-paginated-user-searc
 const map_to_UserViewModel_1 = require("../mappers/map-to-UserViewModel");
 const map_to_UserMeViewModel_1 = require("../mappers/map-to-UserMeViewModel");
 const map_paginated_comment_search_1 = require("../mappers/map-paginated-comment-search");
+const map_to_CommentViewModel_1 = require("../mappers/map-to-CommentViewModel");
 function findBlogByPrimaryKey(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return mongo_db_1.bloggersCollection.findOne({ _id: id });
@@ -33,6 +34,11 @@ function findPostByPrimaryKey(id) {
 function findUserByPrimaryKey(id) {
     return __awaiter(this, void 0, void 0, function* () {
         return mongo_db_1.usersCollection.findOne({ _id: id });
+    });
+}
+function findCommentByPrimaryKey(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return mongo_db_1.commentsCollection.findOne({ _id: id });
     });
 }
 exports.dataQueryRepository = {
@@ -58,6 +64,17 @@ exports.dataQueryRepository = {
                 pageSize: pageSize,
                 totalCount,
             });
+        });
+    },
+    findSingleComment(commentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (mongodb_1.ObjectId.isValid(commentId)) {
+                const comment = yield findCommentByPrimaryKey(new mongodb_1.ObjectId(commentId));
+                if (comment) {
+                    return (0, map_to_CommentViewModel_1.mapSingleCommentToViewModel)(comment);
+                }
+            }
+            return undefined;
         });
     },
     // *****************************
