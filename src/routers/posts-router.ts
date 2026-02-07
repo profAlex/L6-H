@@ -71,7 +71,7 @@ postsRouter.post(
 
 // Return post by post-id
 postsRouter.get(
-    "/:postId", // здесь было просто id
+    `/:${IdParamName.PostId}`, // здесь было просто id
     validateParameterPostId,
     inputErrorManagementMiddleware,
     findSinglePost,
@@ -79,7 +79,7 @@ postsRouter.get(
 
 // auth guarded, Update existing post by post-id with InputModel
 postsRouter.put(
-    "/:postId", // здесь было просто id
+    `/:${IdParamName.PostId}`, // здесь было просто id
     superAdminGuardMiddleware,
     validateParameterPostId,
     /*inputErrorManagementMiddleware,*/ postInputModelValidation,
@@ -89,7 +89,7 @@ postsRouter.put(
 
 // auth guarded, Delete post specified by post-id
 postsRouter.delete(
-    "/:postId", // здесь было просто id
+    `/:${IdParamName.PostId}`, // здесь было просто id
     superAdminGuardMiddleware,
     validateParameterPostId,
     inputErrorManagementMiddleware,

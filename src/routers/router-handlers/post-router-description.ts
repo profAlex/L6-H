@@ -83,7 +83,9 @@ export const createNewPost = async (req: Request, res: Response) => {
 };
 
 export const findSinglePost = async (req: Request, res: Response) => {
-    const result = await dataQueryRepository.findSinglePost(req.params.id);
+    const result = await dataQueryRepository.findSinglePost(
+        req.params[IdParamName.PostId],
+    );
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);
@@ -93,7 +95,10 @@ export const findSinglePost = async (req: Request, res: Response) => {
 };
 
 export const updatePost = async (req: Request, res: Response) => {
-    const result = await postsService.updatePost(req.params.id, req.body);
+    const result = await postsService.updatePost(
+        req.params[IdParamName.PostId],
+        req.body,
+    );
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);
@@ -103,7 +108,9 @@ export const updatePost = async (req: Request, res: Response) => {
 };
 
 export const deletePost = async (req: Request, res: Response) => {
-    const result = await postsService.deletePost(req.params.id);
+    const result = await postsService.deletePost(
+        req.params[IdParamName.PostId],
+    );
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);

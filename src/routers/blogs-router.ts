@@ -59,7 +59,7 @@ blogsRouter.post(
 
 // Returns all posts for specified blog
 blogsRouter.get(
-    "/:blogId/posts",
+    `/:${IdParamName.BlogId}/posts`,
     validateBlogId,
     inputPaginationValidatorForPosts(PostsSortListEnum),
     inputErrorManagementMiddleware,
@@ -68,7 +68,7 @@ blogsRouter.get(
 
 // auth guarded, Creates new post for specific blog
 blogsRouter.post(
-    "/:blogId/posts",
+    `/:${IdParamName.BlogId}/posts`,
     superAdminGuardMiddleware,
     validateBlogId,
     blogRoutesPostInputModelValidation,
@@ -78,17 +78,17 @@ blogsRouter.post(
 
 // Returns blog by id
 blogsRouter.get(
-    "/:id",
-    validatePostIdForGeneralCRUDEndpoints,
+    `/:blogId`,
+    validateBlogId,
     inputErrorManagementMiddleware,
     findSingleBlog,
 );
 
 // auth guarded, Update existing Blog by id with InputModel
 blogsRouter.put(
-    "/:id",
+    `/:${IdParamName.BlogId}`,
     superAdminGuardMiddleware,
-    validatePostIdForGeneralCRUDEndpoints,
+    validateBlogId,
     blogInputModelValidation,
     inputErrorManagementMiddleware,
     updateBlog,
@@ -96,9 +96,9 @@ blogsRouter.put(
 
 // auth guarded, Deletes blog specified by id
 blogsRouter.delete(
-    "/:id",
+    `/:${IdParamName.BlogId}`,
     superAdminGuardMiddleware,
-    validatePostIdForGeneralCRUDEndpoints,
+    validateBlogId,
     inputErrorManagementMiddleware,
     deleteBlog,
 );

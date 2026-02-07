@@ -5,6 +5,7 @@ import { InputGetBlogsQuery } from "../router-types/blog-search-input-model";
 import { matchedData } from "express-validator";
 import { InputGetBlogPostsByIdQuery } from "../router-types/blog-search-by-id-input-model";
 import { dataQueryRepository } from "../../repository-layers/query-repository-layer/query-repository";
+import { IdParamName } from "../util-enums/id-names";
 
 export const getSeveralBlogs = async (req: Request, res: Response) => {
     const sanitizedQuery = matchedData<InputGetBlogsQuery>(req, {
@@ -46,7 +47,7 @@ export const getSeveralPostsFromBlog = async (req: Request, res: Response) => {
     }); //утилита для извечения трансформированных значений после валидатара
     //в req.query остаются сырые квери параметры (строки)
 
-    const blogId = req.params.blogId;
+    const blogId = req.params[IdParamName.BlogId];
     if (!blogId) {
         console.error(
             "blogId seems to be missing in Request inside getSeveralPostsFromBlog, even though it successfully passed middleware checks",
@@ -70,7 +71,7 @@ export const createNewBlogPost = async (req: Request, res: Response) => {
     // const insertedId = await blogsService.createNewBlog(req.body);
 
     const insertedId = await blogsService.createNewBlogPost(
-        req.params.blogId,
+        req.params[IdParamName.BlogId],
         req.body,
     );
 
@@ -91,7 +92,13 @@ export const createNewBlogPost = async (req: Request, res: Response) => {
 };
 
 export const findSingleBlog = async (req: Request, res: Response) => {
-    const result = await dataQueryRepository.findSingleBlog(req.params.id);
+    // console.warn("<-------LOOK ID_3: ", req.params[IdParamName.BlogId]);
+
+    const result = await dataQueryRepository.findSingleBlog(
+        req.params[IdParamName.BlogId],
+    );
+
+    // console.warn("<-------ID WAS FOUND??", result);
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);
@@ -103,7 +110,10 @@ export const findSingleBlog = async (req: Request, res: Response) => {
 };
 
 export const updateBlog = async (req: Request, res: Response) => {
-    const result = await blogsService.updateBlog(req.params.id, req.body);
+    const result = await blogsService.updateBlog(
+        req.params[IdParamName.BlogId],
+        req.body,
+    );
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);
@@ -115,7 +125,9 @@ export const updateBlog = async (req: Request, res: Response) => {
 };
 
 export const deleteBlog = async (req: Request, res: Response) => {
-    const result = await blogsService.deleteBlog(req.params.id);
+    const result = await blogsService.deleteBlog(
+        req.params[IdParamName.BlogId],
+    );
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);

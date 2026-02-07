@@ -5,6 +5,7 @@ import { dataQueryRepository } from "../../repository-layers/query-repository-la
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { usersService } from "../../service-layer(BLL)/users-service";
 import { CustomError } from "../../repository-layers/utility/custom-error-class";
+import { IdParamName } from "../util-enums/id-names";
 
 export const getSeveralUsers = async (
     req: Request<{}, {}, {}, any>,
@@ -77,7 +78,9 @@ export const createNewUser = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-    const result = await usersService.deleteUser(req.params.id);
+    const result = await usersService.deleteUser(
+        req.params[IdParamName.UserId],
+    );
 
     if (result === undefined) {
         res.sendStatus(HttpStatus.NotFound);

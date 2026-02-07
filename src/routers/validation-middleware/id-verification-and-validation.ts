@@ -30,13 +30,14 @@ async function validateId(
     collectionName: string,
     res: Response,
 ): Promise<boolean> {
+    // console.warn("<-------LOOK ID: ", sentId);
     if (!sentId) {
         res.status(HttpStatus.BadRequest).json({
             error: "ID parameter is required",
         });
         return false;
     }
-
+    // console.warn("<-------LOOK ID_2: ", sentId);
     if (!ObjectId.isValid(sentId)) {
         res.status(HttpStatus.BadRequest).json({
             error: `Sent ID: ${sentId} is invalid`,
@@ -76,6 +77,8 @@ async function validateId(
             });
             return false;
         }
+
+        // console.warn("<-------ID WAS FOUND!!");
 
         return true;
     } catch (err) {

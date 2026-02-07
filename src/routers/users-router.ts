@@ -35,7 +35,7 @@ usersRouter.post(
     createNewUser,
 );
 usersRouter.delete(
-    "/:userId", // было просто :id
+    `/:${IdParamName.UserId}`, // было просто :id
     superAdminGuardMiddleware,
     validateUserId,
     inputErrorManagementMiddleware,

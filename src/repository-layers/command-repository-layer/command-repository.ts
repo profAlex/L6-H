@@ -854,5 +854,6 @@ export const dataCommandRepository = {
         await bloggersCollection.deleteMany({});
         await postsCollection.deleteMany({});
         await usersCollection.deleteMany({});
+        await commentsCollection.deleteMany({});
     },
 };
