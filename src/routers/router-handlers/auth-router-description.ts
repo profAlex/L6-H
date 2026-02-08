@@ -7,16 +7,15 @@ import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { RequestWithUserId } from "../request-types/request-types";
 import { UserIdType } from "../router-types/user-id-type";
 import { dataQueryRepository } from "../../repository-layers/query-repository-layer/query-repository";
+import { LoginSuccessViewModel } from "../../adapters/verification/auth-success-login-model";
 
 export const attemptToLogin = async (
     req: Request<{}, {}, LoginInputModel, {}>,
     res: Response,
 ) => {
     const { loginOrEmail, password } = req.body;
-    const loginResult: CustomResult<token> = await authService.loginUser(
-        loginOrEmail,
-        password,
-    );
+    const loginResult: CustomResult<LoginSuccessViewModel> =
+        await authService.loginUser(loginOrEmail, password);
 
     if (!loginResult.data) {
         console.error(

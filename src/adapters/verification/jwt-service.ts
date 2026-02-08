@@ -4,9 +4,12 @@ import { JwtPayloadType } from "./payload-type";
 import { token } from "./token-type";
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { CustomResult } from "../../common/result-type/result-type";
+import { LoginSuccessViewModel } from "./auth-success-login-model";
 
 export const jwtService = {
-    async createToken(payload: JwtPayloadType): Promise<CustomResult<token>> {
+    async createToken(
+        payload: JwtPayloadType,
+    ): Promise<CustomResult<LoginSuccessViewModel>> {
         if (!payload.userId) {
             console.error(
                 "Failed attempt to check credentials login or password",
@@ -23,7 +26,7 @@ export const jwtService = {
                         message: "userId is empty",
                     },
                 ],
-            } as CustomResult<token>;
+            } as CustomResult<LoginSuccessViewModel>;
         }
 
         try {
@@ -32,7 +35,7 @@ export const jwtService = {
             });
 
             return {
-                data: resultedToken,
+                data: { accessToken: resultedToken },
                 statusCode: HttpStatus.NoContent,
                 errorsMessages: [{ field: null, message: null }],
             };
@@ -50,7 +53,7 @@ export const jwtService = {
                             "Unknown error while attempting to sign payload",
                     },
                 ],
-            } as CustomResult<token>;
+            } as CustomResult<LoginSuccessViewModel>;
         }
     },
 
