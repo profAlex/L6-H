@@ -722,7 +722,7 @@ export const dataCommandRepository = {
                 } as CustomResult;
             }
 
-            const res = await bloggersCollection.updateOne(
+            const res = await commentsCollection.updateOne(
                 { _id: new ObjectId(sentCommentId) },
                 { $set: { content: sentContent.content } },
             );
@@ -804,7 +804,7 @@ export const dataCommandRepository = {
                 } as CustomResult;
             }
 
-            const res = await bloggersCollection.deleteOne({
+            const res = await commentsCollection.deleteOne({
                 _id: new ObjectId(sentCommentId),
             });
 
