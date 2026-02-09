@@ -5,7 +5,9 @@ import {
     postsCollection,
     bloggersCollection,
     usersCollection,
+    commentsCollection,
 } from "../../db/mongo.db";
+import { CollectionNames, Collections } from "../../db/collection-names";
 
 export function createIdValidator(
     paramKey: string, // например, "postId"
@@ -47,29 +49,38 @@ async function validateId(
 
     let result;
     try {
-        if (collectionName === "bloggersCollection") {
-            result = await bloggersCollection.findOne(
-                { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } },
-            );
-        } else if (collectionName === "postsCollection") {
-            result = await postsCollection.findOne(
-                { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } },
-            );
-        } else if (collectionName === "usersCollection") {
-            result = await usersCollection.findOne(
-                { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } },
-            );
-        } else if (collectionName === "commentsCollection") {
-            result = await usersCollection.findOne(
-                { _id: new ObjectId(sentId) },
-                { projection: { _id: 1 } },
-            );
-        } else {
-            result = null;
+        // Create mapping from collection name to collection reference
+        const collectionMap: Collections = {
+            [CollectionNames.Posts]: postsCollection,
+            [CollectionNames.Blogs]: bloggersCollection,
+            [CollectionNames.Users]: usersCollection,
+            [CollectionNames.Comments]: commentsCollection,
+        };
+
+        if (!(collectionName in collectionMap)) {
+            res.status(HttpStatus.InternalServerError).json({
+                error: `Collection ${collectionName} is of incorrect name`,
+            });
+            return false;
         }
+
+        // Get the collection reference from the map
+        const collectionRef =
+            collectionMap[collectionName as keyof typeof collectionMap];
+
+        // If collection reference doesn't exist, return false
+        if (!collectionRef) {
+            res.status(HttpStatus.NotFound).json({
+                error: `Collection ${collectionName} not found`,
+            });
+            return false;
+        }
+
+        // Query the collection
+        result = await collectionRef.findOne(
+            { _id: new ObjectId(sentId) },
+            { projection: { _id: 1 } },
+        );
 
         if (!result) {
             res.status(HttpStatus.NotFound).json({

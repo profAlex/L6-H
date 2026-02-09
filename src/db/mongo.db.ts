@@ -5,10 +5,10 @@ import { UserCollectionStorageModel } from "../routers/router-types/user-storage
 import { CommentStorageModel } from "../routers/router-types/comment-storage-model";
 
 const DB_NAME = "bloggers_db";
-const BLOGGERS_COLLECTION_NAME = "bloggers_collection";
-const POSTS_COLLECTION_NAME = "posts_collection";
-const USERS_COLLECTION_NAME = "users_collection";
-const COMMENTS_COLLECTION_NAME = "comments_collection";
+export const BLOGGERS_COLLECTION_NAME = "bloggers_collection";
+export const POSTS_COLLECTION_NAME = "posts_collection";
+export const USERS_COLLECTION_NAME = "users_collection";
+export const COMMENTS_COLLECTION_NAME = "comments_collection";
 
 const URI =
     "mongodb+srv://admin:admin@learningcluster.f1zm90x.mongodb.net/?retryWrites=true&w=majority&appName=LearningCluster";

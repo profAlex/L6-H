@@ -21,7 +21,7 @@ const validateParameterCommentId = createIdValidator(
 commentsRouter.get(
     `/:${IdParamName.CommentId}`,
     validateParameterCommentId,
-    commentInputModelValidation,
+    //commentInputModelValidation,
     inputErrorManagementMiddleware,
     getCommentById,
 );
