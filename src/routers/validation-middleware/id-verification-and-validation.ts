@@ -49,7 +49,6 @@ async function validateId(
 
     let result;
     try {
-        // Create mapping from collection name to collection reference
         const collectionMap: Collections = {
             [CollectionNames.Posts]: postsCollection,
             [CollectionNames.Blogs]: bloggersCollection,
@@ -64,11 +63,9 @@ async function validateId(
             return false;
         }
 
-        // Get the collection reference from the map
         const collectionRef =
             collectionMap[collectionName as keyof typeof collectionMap];
 
-        // If collection reference doesn't exist, return false
         if (!collectionRef) {
             res.status(HttpStatus.NotFound).json({
                 error: `Collection ${collectionName} not found`,
@@ -76,7 +73,6 @@ async function validateId(
             return false;
         }
 
-        // Query the collection
         result = await collectionRef.findOne(
             { _id: new ObjectId(sentId) },
             { projection: { _id: 1 } },

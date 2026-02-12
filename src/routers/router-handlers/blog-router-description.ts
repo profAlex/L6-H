@@ -77,6 +77,8 @@ export const createNewBlogPost = async (req: Request, res: Response) => {
 
     if (insertedId) {
         // а вот здесь уже идем в query repo с айдишником который нам вернул command repo
+        // это нарушение CQRS? Надо сделать такой же метод в dataCommandRepo или надо еще выше поднимать
+        // insertedId и делать отдельный хэндлер?
         const result = await dataQueryRepository.findSinglePost(insertedId);
 
         if (result) {

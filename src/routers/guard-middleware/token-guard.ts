@@ -7,8 +7,6 @@ import { UserIdType } from "../router-types/user-id-type";
 import { HttpStatus } from "../../common/http-statuses/http-statuses";
 import { JwtPayloadType } from "../../adapters/verification/payload-type";
 import { jwtService } from "../../adapters/verification/jwt-service";
-import { CommentInputModel } from "../router-types/comment-input-model";
-import { IdParamName } from "../util-enums/id-names";
 
 export const tokenGuardVerification = async (
     req: Request,
